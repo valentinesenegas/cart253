@@ -5,19 +5,22 @@ Pippin Barr
 Here is a description of this template p5 project.
 **************************************************/
 
+let backgroundShade = 0;
+let circleX = 250;
+let circleY = 250;
+let circleSize = 200;
+
 // setup()
 //
 // Description of setup() goes here.
 function setup() {
-createCanvas(windowWidth, windowHeight);
+createCanvas(500, 500);
 }
 
 // draw()
 //
 // Description of draw() goes here.
 function draw() {
-background(25, 40, 40);
-rectMode(CENTER);
-// rect(width / 2, height / 2, 100, 100);
-rect(200, 200, 100, 100);
+background(backgroundShade);
+ellipse(circleX, circleY, circleSize);
 }
