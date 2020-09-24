@@ -6,11 +6,13 @@ Here is a description of this template p5 project.
 **************************************************/
 
 let backgroundShade = 0;
-
-let circleX = 0;
-let circleY = 250;
-let circleSize = 200;
-let circleSpeed = 2;
+let circle = {
+  x: 0,
+  y: 250,
+  size: 100,
+  speed: 1,
+  fill: 255
+};
 
 // setup()
 //
@@ -24,8 +26,21 @@ createCanvas(500, 500);
 // Description of draw() goes here.
 function draw() {
   background(backgroundShade);
-  circleX += circleSpeed;
-  ellipse(circleX, circleY, circleSize);
 
-  console.log(`circleX: ${circleX}, circleY: ${circleY}, circleSize: ${circleSize}, circleSpeed: ${circleSpeed}`);
+  // circle.speed = random(-5, 5);
+  circle.x += circle.speed;
+  circle.x = constrain(circle.x, 0, width);
+
+  // circle.y = random(0, height);
+  // circle.size = random(10, 100);
+  // circle.fill = random(0, 255);
+
+  // circle.size = map(mouseY, 0, height, 50, 500);
+
+  circle.fill = map(circle.x, 0, width, 0, 255);
+  fill(circle.fill);
+  ellipse(circle.x, circle.y, circle.size);
+
+  // let randomNumber = random();
+  // console.log(randomNumber);
 }
