@@ -97,6 +97,8 @@ function draw() {
   fill(head.r, head.g, head.b);
   ellipse(head.x, head.y, head.size);
 
+//--------- EYE 1 ---------//
+
   // Eye 1
   fill(eye1.r, eye1.g, eye1.b);
   ellipse(eye1.x, eye1.y, eye1.size);
@@ -104,6 +106,18 @@ function draw() {
   // Iris of Eye 1
   fill(irisEye1.r, irisEye1.g, irisEye1.b);
   ellipse(irisEye1.x, irisEye1.y, irisEye1.size);
+
+  // As the mouse goes from left to right, the iris will go from left to right inside the eye
+  irisEye1.x = map(mouseX, 0, width, eye1.x-irisEye1.size*0.75, eye1.x+irisEye1.size*0.75);
+
+  // The iris will stay inside the limits of the eye
+  irisEye1.x = constrain(irisEye1.x, eye1.x-irisEye1.size*0.75, eye1.x+irisEye1.size*0.75);
+
+  // As the mouse goes from top to bottom of the canvas, the iris will go from the top to the bottom of the eye
+  irisEye1.y = map(mouseY, 0, width, eye1.y-irisEye1.size*0.75, eye1.y+irisEye1.size*0.75);
+
+  // The iris will stay inside the limits of the eye
+  irisEye1.y = constrain(irisEye1.y, eye1.y-irisEye1.size*0.75, eye1.y+irisEye1.size*0.75);
 
 //--------- EYE 2 ---------//
 
@@ -123,8 +137,6 @@ function draw() {
   // Iris of Eye 2
   fill(irisEye3.r, irisEye3.g, irisEye3.b);
   ellipse(irisEye3.x, irisEye3.y, irisEye3.size);
-
-
 
     //---- MOUTH ----//
 
