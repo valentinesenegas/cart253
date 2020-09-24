@@ -4,4 +4,4 @@ This is the coursework repository for CART253
 
 I'm so excited about programming!
 
-[Check out my homepage!](https://www.valentinesenegas.com/)
+[Check out my homepage!](http://www.valentinesenegas.com/)
