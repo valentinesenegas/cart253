@@ -2,17 +2,15 @@
 Exercise 02: Dodge-em
 Valentine Sénégas
 
-In this simulation, a friendly fish will escape a shark.
+In this simulation, a friendly fish will try to escape an evil shark.
 **************************************************/
 
-
+// Variables
 
 let imgFish;
 
 let imgShark;
 
-let numBubble = 10;
-// let bubbleSpeed = [1, 3, 7, 5, 8, 2, 9, 4, 3, 6]
 let bubble = {
   size:40,
   r1:143,
@@ -22,27 +20,31 @@ let bubble = {
   r2:255,
   g2:255,
   b2:255,
-  ratio: 4
+  alpha2:100,
+  ratio: 4,
+  count:0,
+  numBubble: 10
 };
 
 let bg = {
-  r: 0,
-  g:0,
-  b:100
+  r: 97,
+  g:181,
+  b:250
 }
 
 let shark = {
   x: 0,
   y: 250,
   size: 100,
-  vx: 1,
-  vy: 1,
-  speed: 5,
   fill: {
     r: 237,
     g: 85,
     b: 136
-  }
+  },
+  vx: 1,
+  vy: 1,
+  speed: 5
+
 }
 
 let fish = {
@@ -56,59 +58,61 @@ let fish = {
   },
   vx: 0,
   vy: 0,
-  speed: 5
+  vxmax : 10,
+  vymax : 10,
+  speed: 1
 }
 
 
-let count = 0;
-
-
 // preload()
+//
+// Preloading the images of the fish and the shark
 function preload() {
   imgFish = loadImage('assets/images/fish.png');
-  imgBubble = loadImage('assets/images/bubble.png');
   imgShark = loadImage('assets/images/shark.png');
-
-  imgSeaweed1 = loadImage('assets/images/seaweed1.png');
-  imgSeaweed2 = loadImage('assets/images/seaweed2.png');
-  imgCoral = loadImage('assets/images/coral1.png');
 }
 
 // setup()
 //
-// Here we are setting the size of the canvas, and the position & speed of Shark
+// Setting the size of the canvas, and the position & speed of the shark
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
   shark.y = random(0, height);
   shark.vx = shark.speed;
-
-  noCursor();
 }
 
 // draw()
 //
-// Here we draw everything: the background, the fish and Shark. We also check if there is a collision between Shark and the fish
+// Drawing the background, the bubbles, the fish and the shark. Creating movement. Checking if there is a collision between the Shark and the fish
 function draw() {
 
+  // BACKGROUND AND BUBBLES
+
+  // Background color
   background(bg.r, bg.g, bg.b);
 
-
+  //-----------------------------//
 
   // Display bubbles
-  for (let i = 0; i < numBubble; i++){
-    let x = (width / numBubble) * i + (width / numBubble) /2;
-    let y = height - ((count * bubble.speed[i]) % height);
+  for (let i = 0; i < bubble.numBubble; i++){
+    let x = (width / bubble.numBubble) * i + (width / bubble.numBubble) /2;
+    let y = height - ((bubble.count * bubble.speed[i]) % height);
 
     noStroke();
 
+    // Big circle
     fill(bubble.r1, bubble.g1, bubble.b1);
     ellipse(x,y, bubble.size);
 
-    fill(bubble.r2, bubble.g2, bubble.b2);
-    ellipse(x, y - bubble.size / bubble.ratio , bubble.size / bubble.ratio);
+    // Small circle
+    fill(bubble.r2, bubble.g2, bubble.b2, bubble.alpha2);
+    ellipse(x - bubble.ratio, y - bubble.size / bubble.ratio , bubble.size / bubble.ratio);
   }
-  count++;
+  bubble.count++;
+
+  //-----------------------------//
+  // MOVEMENT OF THE SHARK AND THE FISH
 
   //Shark movement
   shark.x = shark.x + shark.vx;
@@ -119,7 +123,7 @@ function draw() {
     shark.y = random(0, height);
   }
 
-// Makes the shark move vertically toward the fish while it moves left to right
+  // Makes the shark move vertically toward the fish while it moves left to right
   if (shark.y > fish.y){
     shark.y = shark.y - shark.vx;
   }
@@ -128,72 +132,59 @@ function draw() {
     shark.y = shark.y + shark.vy;
   }
 
+  //-----------------------------//
 
-  // fish movement
+  // Fish movement
 
-// fish movement with mouse
+  // If the mouse x position is GREATER than the fish x position, it must be to the RIGHT of the fish
+  if (mouseX > fish.x) {
+    // Set the fish's x velocity to a POSITIVE number to move it to the RIGHT
+    fish.vx += fish.speed;
+    fish.vx = Math.min(fish.vx, fish.vxmax);
+  }
+  // Or if the mouse x position is LESS than the fish x position, it must be to the LEFT of the fish
+  else if (mouseX < fish.x) {
+    // Set the fish's x velocity to a NEGATIVE number to move it to the LEFT
+    fish.vx -= fish.speed;
+    fish.vx = Math.max(fish.vx, -fish.vxmax);
+  }
 
-    // If the mouse x position is GREATER than the circle x position, it must be to the RIGHT of the circle
-    if (mouseX > fish.x) {
-      // So set the circle's x velocity to a POSITIVE number to move it to the RIGHT
-      fish.vx = fish.speed;
-    }
-    // Or if the mouse x position is LESS than the circle x position, it must be to the LEFT of the circle
-    else if (mouseX < fish.x) {
-      // So set the circle's x velocity to a NEGATIVE number to move it to the LEFT
-      fish.vx = -fish.speed;
-    }
+  // If the mouse position is GREATER than the fish y position, it must be BELOW the fish
+  if (mouseY > fish.y) {
+    // So set the fish's x velocity to a POSITIVE number to move it DOWN
+    fish.vy += fish.speed;
+    fish.vy = Math.min(fish.vy, fish.vymax);
+  }
+  // Or if the mouse y position is LESS than the fish y position, it must be ABOVE the fish
+  else if (mouseY < fish.y) {
+    // Set the fish's x velocity to a NEGATIVE number to move it UP
+    fish.vy -= fish.speed;
+    fish.vy = Math.max(fish.vy, -fish.vxmax);
+  }
 
-
-    // If the mouse position is GREATER than the circle y position, it must be BELOW the circle
-    if (mouseY > fish.y) {
-      // So set the circle's x velocity to a POSITIVE number to move it DOWN
-      fish.vy = fish.speed;
-    }
-    // Or if the mouse y position is LESS than the circle y position, it must be ABOVE the circle
-    else if (mouseY < fish.y) {
-      // So set the circle's x velocity to a NEGATIVE number to move it UP
-      fish.vy = -fish.speed;
-    }
-//
-
-// Then we actually APPLY these changes to `vx` and `vy` to the circle's position
-fish.x = fish.x + fish.vx;
-fish.y = fish.y + fish.vy;
-
-    // fish.x = mouseX;
-    // fish.y = mouseY;
+  // Apply changes to vx and vy to the fish's position
+  fish.x = fish.x + fish.vx;
+  fish.y = fish.y + fish.vy;
 
 
-// fish movement with keyboard
-//-------------------------------------//
-    // function keyPressed() {
-    //   if (keyCode === LEFT_ARROW) {
-    //     fish.vx = -fish.speed;
-    //   } else if (keyCode === RIGHT_ARROW) {
-    //     fish.vx = fish.speed;
-    //   }
-    // }
-//-------------------------------------//
+  //-----------------------------//
+  // CHECK FOR A COLLISION
 
-
-  // Check for catching shark
+  // Check if the shark catches the fish
   let d = dist(fish.x, fish.y, shark.x, shark.y);
   if (d < shark.size/2 + fish.size/2) {
     noLoop();
   }
 
-  // Display shark
-  // fill(shark.fill.r, shark.fill.g, shark.fill.b);
-  // ellipse(shark.x, shark.y, shark.size);
 
+  //-----------------------------//
+  // DISPLAY
+
+  // Display shark
   imageMode(CENTER);
   image(imgShark, shark.x, shark.y);
 
   // Display fish
-  // fill(fish.fill.r, fish.fill.g, fish.fill.b);
-  //   ellipse(fish.x, fish.y, fish.size);
-
   imageMode(CENTER);
   image(imgFish, fish.x, fish.y);
 }
