@@ -1,18 +1,29 @@
 /**************************************************
 Conditionals
-Pippin Barr
+Valentine Sénégas
 
-Here is a description of this template p5 project.
+Here is a description of this conditionals experiment.
 **************************************************/
 
-let backgroundShade = 0;
-let circle = {
-  x: 0,
-  y: 250,
-  size: 100,
-  speed: 3
+let bg = {
+  r:0,
+  g:0,
+  b:0
 }
 
+// let circle = {
+//   x: 250,
+//   y: 250,
+//   size: 100,
+//   vx: 0,
+//   vy: 0,
+//   ax: 0,
+//   ay: 0,
+//   acceleration: 0.25,
+//   maxSpeed: 10
+// }
+
+let angle = 0;
 // setup()
 //
 // Description of setup() goes here.
@@ -24,37 +35,18 @@ function setup() {
 //
 // Description of draw() goes here.
 function draw() {
-  background(backgroundShade);
 
-circle.x = circle.x + circle.speed;
+  background(bg.r, bg.g, bg.b);
 
-fill(255,255,255);
+push();
+fill(255,0,0);
+rectMode(CENTER);
+translate(width/2, height/2);
+rotate(angle);
+rect(0, 0, 100, 100);
+pop();
 
-if (!(circle.x < width/3)) {
-  fill(255, 0, 0);
-}
-
-// if (circle.x > width) {
-//   // this is called a block of code
-//   circle.speed = -circle.speed;
-// }
-
-// if (circle.x < 0) {
-//   circle.speed = -circle.speed;
-// }
-
-// // The position of the mouse determines the circle's color
-// if (mouseX < width/3) {
-//   fill(255, 0, 0);
-// }
-// else if (mouseX < 2* width/3){
-//   fill(0, 255, 0);
-// }
-//
-// else {
-//   fill(0, 0, 255);
-// }
+angle = angle + 0.1;
 
 
-ellipse(circle.x,circle.y,circle.size);
 }
