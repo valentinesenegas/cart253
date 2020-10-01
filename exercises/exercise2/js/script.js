@@ -27,7 +27,10 @@ let user = {
     r: 138,
     g: 99,
     b: 199
-  }
+  },
+  vx: 0,
+  vy: 0,
+  speed: 5
 }
 
 let numStatic = 5000;
@@ -71,8 +74,38 @@ function draw() {
   }
 
   // User movement
-    user.x = mouseX;
-    user.y = mouseY;
+
+
+    // If the mouse x position is GREATER than the circle x position, it must be to the RIGHT of the circle
+    if (mouseX > user.x) {
+      // So set the circle's x velocity to a POSITIVE number to move it to the RIGHT
+      user.vx = user.speed;
+    }
+    // Or if the mouse x position is LESS than the circle x position, it must be to the LEFT of the circle
+    else if (mouseX < user.x) {
+      // So set the circle's x velocity to a NEGATIVE number to move it to the LEFT
+      user.vx = -user.speed;
+    }
+
+
+    // If the mouse position is GREATER than the circle y position, it must be BELOW the circle
+    if (mouseY > user.y) {
+      // So set the circle's x velocity to a POSITIVE number to move it DOWN
+      user.vy = user.speed;
+    }
+    // Or if the mouse y position is LESS than the circle y position, it must be ABOVE the circle
+    else if (mouseY < user.y) {
+      // So set the circle's x velocity to a NEGATIVE number to move it UP
+      user.vy = -user.speed;
+    }
+//
+
+// Then we actually APPLY these changes to `vx` and `vy` to the circle's position
+user.x = user.x + user.vx;
+user.y = user.y + user.vy;
+
+    // user.x = mouseX;
+    // user.y = mouseY;
 
   // Check for catching covid19
   let d = dist(user.x, user.y, covid19.x, covid19.y);
