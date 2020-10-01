@@ -2,15 +2,41 @@
 Exercise 02: Dodge-em
 Valentine Sénégas
 
-Today we are dodging something that I will decide later
+In this simulation, a friendly fish will escape a shark.
 **************************************************/
 
-let covid19 = {
+
+
+let imgFish;
+
+let imgShark;
+
+let numBubble = 10;
+// let bubbleSpeed = [1, 3, 7, 5, 8, 2, 9, 4, 3, 6]
+let bubble = {
+  size:40,
+  r1:143,
+  g1:193,
+  b1:235,
+  speed: [1, 3, 7, 5, 8, 2, 9, 4, 3, 6],
+  r2:255,
+  g2:255,
+  b2:255,
+  ratio: 4
+};
+
+let bg = {
+  r: 0,
+  g:0,
+  b:100
+}
+
+let shark = {
   x: 0,
   y: 250,
   size: 100,
-  vx: 0,
-  vy: 0,
+  vx: 1,
+  vy: 1,
   speed: 5,
   fill: {
     r: 237,
@@ -19,7 +45,7 @@ let covid19 = {
   }
 }
 
-let user = {
+let fish = {
   x: 250,
   y: 250,
   size: 100,
@@ -33,94 +59,141 @@ let user = {
   speed: 5
 }
 
-let numStatic = 5000;
 
+let count = 0;
+
+
+// preload()
+function preload() {
+  imgFish = loadImage('assets/images/fish.png');
+  imgBubble = loadImage('assets/images/bubble.png');
+  imgShark = loadImage('assets/images/shark.png');
+
+  imgSeaweed1 = loadImage('assets/images/seaweed1.png');
+  imgSeaweed2 = loadImage('assets/images/seaweed2.png');
+  imgCoral = loadImage('assets/images/coral1.png');
+}
 
 // setup()
 //
-// Here we are setting the size of the canvas, and the random position & speed of covid-19
+// Here we are setting the size of the canvas, and the position & speed of Shark
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
-  covid19.y = random(0, height);
-  covid19.vx = covid19.speed;
+  shark.y = random(0, height);
+  shark.vx = shark.speed;
 
   noCursor();
-
 }
 
 // draw()
 //
-// Here we draw everything: the background, the user and covid-19. We also check if there is a collision between covid-19 and the user
+// Here we draw everything: the background, the fish and Shark. We also check if there is a collision between Shark and the fish
 function draw() {
 
-  background(0);
+  background(bg.r, bg.g, bg.b);
 
-  // Display static
-  for (let i = 0; i < numStatic; i++){
-    let x = random(0, width);
-    let y = random(0, height);
-    stroke(255);
-    point(x,y);
+
+
+  // Display bubbles
+  for (let i = 0; i < numBubble; i++){
+    let x = (width / numBubble) * i + (width / numBubble) /2;
+    let y = height - ((count * bubble.speed[i]) % height);
+
+    noStroke();
+
+    fill(bubble.r1, bubble.g1, bubble.b1);
+    ellipse(x,y, bubble.size);
+
+    fill(bubble.r2, bubble.g2, bubble.b2);
+    ellipse(x, y - bubble.size / bubble.ratio , bubble.size / bubble.ratio);
+  }
+  count++;
+
+  //Shark movement
+  shark.x = shark.x + shark.vx;
+  shark.y = shark.y + shark.vy;
+
+  if (shark.x > width) {
+    shark.x = 0;
+    shark.y = random(0, height);
   }
 
-  //Covid 19 movement
-  covid19.x = covid19.x + covid19.vx;
-  covid19.y = covid19.y + covid19.vy;
-
-  if (covid19.x > width) {
-    covid19.x = 0;
-    covid19.y = random(0, height);
+// Makes the shark move vertically toward the fish while it moves left to right
+  if (shark.y > fish.y){
+    shark.y = shark.y - shark.vx;
   }
 
-  // User movement
+  else {
+    shark.y = shark.y + shark.vy;
+  }
 
+
+  // fish movement
+
+// fish movement with mouse
 
     // If the mouse x position is GREATER than the circle x position, it must be to the RIGHT of the circle
-    if (mouseX > user.x) {
+    if (mouseX > fish.x) {
       // So set the circle's x velocity to a POSITIVE number to move it to the RIGHT
-      user.vx = user.speed;
+      fish.vx = fish.speed;
     }
     // Or if the mouse x position is LESS than the circle x position, it must be to the LEFT of the circle
-    else if (mouseX < user.x) {
+    else if (mouseX < fish.x) {
       // So set the circle's x velocity to a NEGATIVE number to move it to the LEFT
-      user.vx = -user.speed;
+      fish.vx = -fish.speed;
     }
 
 
     // If the mouse position is GREATER than the circle y position, it must be BELOW the circle
-    if (mouseY > user.y) {
+    if (mouseY > fish.y) {
       // So set the circle's x velocity to a POSITIVE number to move it DOWN
-      user.vy = user.speed;
+      fish.vy = fish.speed;
     }
     // Or if the mouse y position is LESS than the circle y position, it must be ABOVE the circle
-    else if (mouseY < user.y) {
+    else if (mouseY < fish.y) {
       // So set the circle's x velocity to a NEGATIVE number to move it UP
-      user.vy = -user.speed;
+      fish.vy = -fish.speed;
     }
 //
 
 // Then we actually APPLY these changes to `vx` and `vy` to the circle's position
-user.x = user.x + user.vx;
-user.y = user.y + user.vy;
+fish.x = fish.x + fish.vx;
+fish.y = fish.y + fish.vy;
 
-    // user.x = mouseX;
-    // user.y = mouseY;
+    // fish.x = mouseX;
+    // fish.y = mouseY;
 
-  // Check for catching covid19
-  let d = dist(user.x, user.y, covid19.x, covid19.y);
-  if (d < covid19.size/2 + user.size/2) {
+
+// fish movement with keyboard
+//-------------------------------------//
+    // function keyPressed() {
+    //   if (keyCode === LEFT_ARROW) {
+    //     fish.vx = -fish.speed;
+    //   } else if (keyCode === RIGHT_ARROW) {
+    //     fish.vx = fish.speed;
+    //   }
+    // }
+//-------------------------------------//
+
+
+  // Check for catching shark
+  let d = dist(fish.x, fish.y, shark.x, shark.y);
+  if (d < shark.size/2 + fish.size/2) {
     noLoop();
   }
 
-  // Display covid
-  fill(covid19.fill.r, covid19.fill.g, covid19.fill.b);
-  ellipse(covid19.x, covid19.y, covid19.size);
+  // Display shark
+  // fill(shark.fill.r, shark.fill.g, shark.fill.b);
+  // ellipse(shark.x, shark.y, shark.size);
 
+  imageMode(CENTER);
+  image(imgShark, shark.x, shark.y);
 
-  // Display User
-  fill(user.fill.r, user.fill.g, user.fill.b);
-    ellipse(user.x, user.y, user.size);
+  // Display fish
+  // fill(fish.fill.r, fish.fill.g, fish.fill.b);
+  //   ellipse(fish.x, fish.y, fish.size);
 
-
+  imageMode(CENTER);
+  image(imgFish, fish.x, fish.y);
 }
