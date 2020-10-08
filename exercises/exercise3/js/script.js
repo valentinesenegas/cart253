@@ -5,12 +5,15 @@ Valentine Sénégas
 Hello there!
 Your character is a little pig trying to meet with his friends.
 Use the arrows to move and try to touch one of the other animals.
+But beware, a wolf is lurking around...
 **************************************************/
 
 // Variables
 let imgPig;
 let imgChick;
 let imgHorse;
+let imgWolf;
+let imgUnicorn;
 
 let pig = {
   x: 250,
@@ -18,7 +21,7 @@ let pig = {
   vx: 0,
   vy: 0,
   speed: 2.5,
-  size: 20
+  size: 100
 }
 
 let chick = {
@@ -27,7 +30,7 @@ let chick = {
   vx: 0,
   vy: 0,
   speed: 1,
-  size:20
+  size: 100
 }
 
 let horse = {
@@ -35,20 +38,46 @@ let horse = {
   y: 150,
   vx: 0,
   vy: 0,
-  speed: 1,
-  size: 20
+  speed: 2,
+  size: 100
 }
 
-let state = `title`; // Can be: title, simulation, friends or sadness
+let wolf = {
+  x: 250,
+  y: 150,
+  vx: 1,
+  vy: 1,
+  speed: 2.5,
+  size: 100
+}
+
+let unicorn = {
+  x: 250,
+  y: 150,
+  vx: 0,
+  vy: 0,
+  speed: 0,
+  size: 100
+}
+
+let bg = {
+  r: 186,
+  g: 229,
+  b: 255
+}
+
+let state = `title`; // Can be: title, simulation, friends, sadness or eatenByTheWolf
 
 
 // preload()
 //
 // Preloading the images of the animals
 function preload() {
+  imgPig = loadImage('assets/images/pig.png');
   imgChick = loadImage('assets/images/chick.png');
   imgHorse = loadImage('assets/images/horse.png');
-  imgPig = loadImage('assets/images/pig.png');
+  imgWolf = loadImage('assets/images/wolf.png');
+  imgUnicorn = loadImage('assets/images/unicorn.png');
 }
 
 // setup()
@@ -61,7 +90,7 @@ function setup() {
 
 function setupCharacters() {
 
-  // Position circles separated from one another
+  // Position characters separated from one another
   chick.x = width / 3;
   chick.y = height / 2;
 
@@ -70,6 +99,12 @@ function setupCharacters() {
 
   pig.x = width / 2;
   pig.y = height / 2;
+
+  wolf.x = width / 2;
+  wolf.y = (height / 2) - (height / 3);
+
+  unicorn.x = width - 100;
+  unicorn.y = 100;
 
 
   // Start characters moving in a random direction
@@ -84,7 +119,8 @@ function setupCharacters() {
 //
 // Description of draw() goes here.
 function draw() {
-  background(186, 229, 255);
+  background(bg.r, bg.g, bg.b);
+  backgroundColor();
 
   if (state === `title`) {
     title();
@@ -98,14 +134,20 @@ function draw() {
   else if (state === `sadness`) {
     sadness();
   }
+  else if (state === `eatenByTheWolf`) {
+    eatenByTheWolf();
+  }
+  else if (state === `savedByUnicorn`) {
+    savedByUnicorn();
+  }
 }
 
 function title() {
   push();
-  textSize(64);
+  textSize(42);
   fill(197, 97, 131);
   textAlign(CENTER, CENTER);
-  text(`Find your friends!`, width/2, height/2);
+  text(`Find your friends and escape from the wolf!`, width/2, height/2);
   pop();
 }
 
@@ -122,7 +164,7 @@ function friends() {
   textSize(64);
   fill(255,150,150);
   textAlign(CENTER, CENTER);
-  text(`Yay! You found your friends`, width/2, height/2);
+  text(`Yay! You found a friend`, width/2, height/2);
   pop();
 }
 
@@ -131,7 +173,26 @@ function sadness() {
   textSize(64);
   fill(150,150,255);
   textAlign(CENTER, CENTER);
-  text(`:(`, width/2, height/2);
+  text(`Your friends abandoned you :(`, width/2, height/2);
+  pop();
+}
+
+function eatenByTheWolf() {
+  push();
+  background(20);
+  textSize(64);
+  fill(179,54,60);
+  textAlign(CENTER, CENTER);
+  text(`The wolf caught you!`, width/2, height/2);
+  pop();
+}
+
+function savedByUnicorn() {
+  push();
+  textSize(64);
+  fill(150,150,255);
+  textAlign(CENTER, CENTER);
+  text(`The unicorn saved you from the wolf! `, width/2, height/2);
   pop();
 }
 
@@ -173,6 +234,27 @@ function move() {
 
     pig.x = pig.x + pig.vx;
     pig.y = pig.y + pig.vy;
+
+
+    // Makes the wolf move vertically toward the pig while it moves left to right
+    if (wolf.y > pig.y){
+      wolf.y = wolf.y - wolf.vy;
+    }
+
+    else {
+      wolf.y = wolf.y + wolf.vy;
+    }
+
+
+    if (wolf.x > pig.x){
+      wolf.x = wolf.x - wolf.vx;
+    }
+
+    else {
+      wolf.x = wolf.x + wolf.vx;
+    }
+
+
 }
 
 function checkOffscreen() {
@@ -207,8 +289,21 @@ function checkOverlap() {
     state = `friends`;
   }
 
-}
+  // Check if the wolf eats the pig
+  let d3 = dist(pig.x, pig.y, wolf.x, wolf.y);
 
+  if (d3 < pig.size / 2 + wolf.size / 2) {
+    state = `eatenByTheWolf`;
+    }
+
+  // Check if the wolf eats the pig
+  let d4 = dist(pig.x, pig.y, unicorn.x, unicorn.y);
+
+  if (d4 < pig.size / 2 + unicorn.size / 2) {
+    state = `savedByUnicorn`;
+    }
+
+}
 
 function display() {
   // Display the images of the animals at the accurate position
@@ -216,6 +311,16 @@ function display() {
   image(imgPig, pig.x, pig.y);
   image(imgChick, chick.x, chick.y);
   image(imgHorse, horse.x, horse.y);
+  image(imgWolf, wolf.x, wolf.y);
+  image(imgUnicorn, unicorn.x, unicorn.y);
+}
+
+function backgroundColor(){
+  // When the wolf gets closer to the pig, the background color changes
+
+   let d3 = dist(pig.x, pig.y, wolf.x, wolf.y);
+
+   bg.r = map(bg.r, 0, (dist(pig.x, pig.y, wolf.x, wolf.y)), 186, 255);
 }
 
 //-------------//
