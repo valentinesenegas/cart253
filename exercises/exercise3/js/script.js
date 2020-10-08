@@ -54,9 +54,6 @@ let wolf = {
 let unicorn = {
   x: 250,
   y: 150,
-  vx: 0,
-  vy: 0,
-  speed: 0,
   size: 100
 }
 
@@ -66,7 +63,7 @@ let bg = {
   b: 255
 }
 
-let state = `title`; // Can be: title, simulation, friends, sadness or eatenByTheWolf
+let state = `title`; // Can be: title, simulation, friends, sadness, eatenByTheWolf or savedByUnicorn
 
 
 // preload()
@@ -84,13 +81,13 @@ function preload() {
 //
 // Setting the size of the canvas
 function setup() {
-    createCanvas(1500, 1000);
+    createCanvas(1400, 900);
     setupCharacters();
 }
 
 function setupCharacters() {
-
   // Position characters separated from one another
+
   chick.x = width / 3;
   chick.y = height / 2;
 
@@ -117,11 +114,13 @@ function setupCharacters() {
 
 // draw()
 //
-// Description of draw() goes here.
+// Background, states management
 function draw() {
+
   background(bg.r, bg.g, bg.b);
   backgroundColor();
 
+  // States management
   if (state === `title`) {
     title();
   }
@@ -142,6 +141,7 @@ function draw() {
   }
 }
 
+//--- States ---//
 function title() {
   push();
   textSize(42);
@@ -156,7 +156,7 @@ function simulation() {
   move();
   checkOffscreen();
   checkOverlap();
-  checkKeys();
+  checkKeys(); // Allows the user to move the pig using the arrow keys!
 }
 
 function friends() {
@@ -196,7 +196,11 @@ function savedByUnicorn() {
   pop();
 }
 
+//--------------//
+
 function checkKeys() {
+  // Allows the user to move the pig using the arrow keys!
+
   if (keyIsDown(LEFT_ARROW)) {
   // If it is, set the x velocity to be negative
   pig.vx = -pig.speed;
@@ -225,7 +229,7 @@ function checkKeys() {
 }
 
 function move() {
-  // Move the animals
+    // Move the animals
     chick.x = chick.x + chick.vx;
     chick.y = chick.y + chick.vy;
 
@@ -235,26 +239,19 @@ function move() {
     pig.x = pig.x + pig.vx;
     pig.y = pig.y + pig.vy;
 
-
-    // Makes the wolf move vertically toward the pig while it moves left to right
+    // Makes the wolf move towards the pig
     if (wolf.y > pig.y){
       wolf.y = wolf.y - wolf.vy;
     }
-
     else {
       wolf.y = wolf.y + wolf.vy;
     }
-
-
     if (wolf.x > pig.x){
       wolf.x = wolf.x - wolf.vx;
     }
-
     else {
       wolf.x = wolf.x + wolf.vx;
     }
-
-
 }
 
 function checkOffscreen() {
@@ -262,11 +259,11 @@ function checkOffscreen() {
   if (isOffScreen(chick) || isOffScreen(horse)) {
     // Sad ending :(
     state = `sadness`;
-    console.log("sadness");
   }
 }
 
 function isOffScreen(character) {
+  // If characters go off screen, return true. Used in checkOffscreen()
   if (character.x < 0 || character.x > width || character.y < 0 || character.y > height) {
     return true;
   }
@@ -279,10 +276,12 @@ function checkOverlap() {
   // Check if the characters overlap
   let d1 = dist(pig.x, pig.y, chick.x, chick.y);
 
+  // Check if the pig and chick overlap
   if (d1 < pig.size / 2 + chick.size / 2) {
     state = `friends`;
     }
 
+  // Check if the pig and horse overlap
   let d2 = dist(pig.x, pig.y, horse.x, horse.y);
 
   if (d2 < pig.size / 2 + horse.size / 2) {
@@ -296,7 +295,7 @@ function checkOverlap() {
     state = `eatenByTheWolf`;
     }
 
-  // Check if the wolf eats the pig
+  // Check if the unicorn saves the pig
   let d4 = dist(pig.x, pig.y, unicorn.x, unicorn.y);
 
   if (d4 < pig.size / 2 + unicorn.size / 2) {
@@ -306,7 +305,7 @@ function checkOverlap() {
 }
 
 function display() {
-  // Display the images of the animals at the accurate position
+  // Display the images of the animals at the proper position
   imageMode(CENTER);
   image(imgPig, pig.x, pig.y);
   image(imgChick, chick.x, chick.y);
@@ -323,7 +322,7 @@ function backgroundColor(){
    bg.r = map(bg.r, 0, (dist(pig.x, pig.y, wolf.x, wolf.y)), 186, 255);
 }
 
-//-------------//
+// To start the simulation, click with the mouse
 function mousePressed(){
   if (state === `title`){
     state = `simulation`;
