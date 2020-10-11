@@ -10,8 +10,6 @@ let imgMailman;
 
 let imgDonald;
 
-let imgMail;
-
 let mailman = {
   x: 120,
   y: 120,
@@ -30,7 +28,8 @@ let donald = {
   speed: 2,
 };
 
-let mail;
+const mailCount = 30;
+let mails = Array();
 
 let bg = {
   r: 186,
@@ -40,13 +39,29 @@ let bg = {
 
 let state = `simulation`;
 
+function createMail(imgParam) {
+  let mail = {
+    x: 0,
+    y: 0,
+    initVX: 3,
+    initVY: 3,
+    speed: 5,
+    vx: 0,
+    vy: 0,
+    img: undefined
+  }
+  mail.img = imgParam;
+  return mail;
+}
+
 // preload()
 //
 // Preloading the images
 function preload() {
   imgMailman = loadImage("assets/images/mailman.png");
   imgDonald = loadImage("assets/images/donald.png");
-  imgMail = loadImage("assets/images/mail.png");
+  for (let mailIdx = 0; mailIdx < mailCount; mailIdx++)
+    mails.push(createMail(loadImage("assets/images/mail.png")));
 }
 
 // setup()
@@ -54,6 +69,14 @@ function preload() {
 // Description of setup() goes here.
 function setup() {
   createCanvas(1400, 900);
+
+  // Create mails
+  for (let mailIdx = 0; mailIdx < mailCount; mailIdx++) {
+    mails[mailIdx].x = random(mails[mailIdx].img.width / 2, width - mails[mailIdx].img.width / 2);
+    mails[mailIdx].y = random(mails[mailIdx].img.height / 2, height - mails[mailIdx].img.height / 2);
+    mails[mailIdx].vx = random(-mails[mailIdx].initVX, mails[mailIdx].initVX);
+    mails[mailIdx].vy = random(-mails[mailIdx].initVY, mails[mailIdx].initVY);
+  }
 }
 
 // draw()
@@ -65,13 +88,31 @@ function draw() {
   display();
   move();      // Movement of the Donald
   checkKeys(); // Movement of the mailman
+  checkMailCatch();
 }
 
 function display() {
+
   // DISPLAY
   imageMode(CENTER);
   image(imgMailman, mailman.x, mailman.y);
   image(imgDonald, donald.x, donald.y);
+  for (let mailIdx = 0; mailIdx < mailCount; mailIdx++)
+    if (mails[mailIdx].img != undefined)
+      image(mails[mailIdx].img, mails[mailIdx].x, mails[mailIdx].y);
+}
+
+function checkMailCatch() {
+  for (let mailIdx = 0; mailIdx < mailCount; mailIdx++) {
+    if (mails[mailIdx].img != undefined) {
+      if (mailman.x < mails[mailIdx].x + mails[mailIdx].img.width &&
+         mailman.x + imgMailman.width >mails[mailIdx].x &&
+         mailman.y < mails[mailIdx].y + mails[mailIdx].img.height &&
+         mailman.y + imgMailman.height > mails[mailIdx].y)
+          // Collision detected
+          mails[mailIdx].img = undefined;
+    }
+  }
 }
 
 
@@ -95,6 +136,16 @@ function move() {
     donald.vy = random(-donald.speed, donald.speed);
   }
 
+  for (let mailIdx = 0; mailIdx < mailCount; mailIdx++) {
+    if (mails[mailIdx].img != undefined) {
+      mails[mailIdx].x += mails[mailIdx].vx;
+      mails[mailIdx].y += mails[mailIdx].vy;
+      if (mails[mailIdx].x <= mails[mailIdx].img.width / 2 || mails[mailIdx].x > width - mails[mailIdx].img.width / 2)
+        mails[mailIdx].vx = -mails[mailIdx].vx;
+      if (mails[mailIdx].y <= mails[mailIdx].img.height / 2 || mails[mailIdx].y > height - mails[mailIdx].img.height / 2)
+        mails[mailIdx].vy = -mails[mailIdx].vy;
+    }
+  }
 }
 
 
