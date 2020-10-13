@@ -8,6 +8,11 @@ Use the arrow keys to move around !
 You have one minute to collect 20 letters.
 **************************************************/
 
+// Images for decoration
+let imgLotsOfLetters;
+let imgBigDonaldStealsMail;
+
+// Images for moving objects
 let imgMailman;
 
 let imgDonald;
@@ -50,7 +55,12 @@ let bg = {
   b: 250,
 };
 
-let state = `simulation`;
+let myFont;
+
+let score = 0;
+let win = false;
+
+let state = `title`; // Can be title, simulation, win
 
 function createMail(imgParam) {
   let mail = {
@@ -64,25 +74,35 @@ function createMail(imgParam) {
   return mail;
 }
 
-let score = 0;
-let win = false;
-
 // preload()
 //
-// Preloading the images
+// Preloading the images, fonts and sounds
 function preload() {
+  // Characters: mailman and the Donald
   imgMailman = loadImage("assets/images/mailman.png");
   imgDonald = loadImage("assets/images/donald.png");
+
   for (let mailIdx = 0; mailIdx < mailCount; mailIdx++)
     mails.push(createMail(loadImage("assets/images/mail.png")));
+
+    // Title state
+    imgBigDonaldStealsMail = loadImage("assets/images/bigdonaldstealsmail.png");
+    imgLotsOfLetters = loadImage("assets/images/lotsofletters.png");
+
+  // Google Font: Secular One
+  myFont = loadFont('assets/fonts/SecularOne-Regular.ttf');
 }
 
 // setup()
 //
-// Description of setup() goes here.
+// Creation of the canvas, position of the letters
 function setup() {
   createCanvas(1400, 900);
+  textFont(myFont);
+  setupMails();
+}
 
+function setupMails() {
   // Create mails
   for (let mailIdx = 0; mailIdx < mailCount; mailIdx++) {
     mails[mailIdx].x = random(
@@ -104,11 +124,62 @@ function setup() {
 function draw() {
   background(bg.r, bg.g, bg.b);
 
+  // States management
+  if (state === `title`) {
+    title();
+  }
+  else if (state === `simulation`) {
+    simulation();
+  }
+  else if (state === `win`) {
+    democracySaved();
+  }
+
+}
+
+//--- States ---//
+function title() {
+  push();
+  textSize(65);
+  textFont(myFont);
+  fill(65, 146, 240);
+  textAlign(CENTER, CENTER);
+  text(`Save democracy!`, width/2, height/2);
+  image(imgLotsOfLetters, width/4, 0);
+  image(imgBigDonaldStealsMail, width-imgBigDonaldStealsMail.width, height - imgBigDonaldStealsMail.height);
+  pop();
+}
+
+function simulation() {
   display();
   move(); // Movement of the Donald
   checkKeys(); // Movement of the mailman
   checkMailCatch();
 }
+
+function democracySaved() {
+  push();
+  textSize(64);
+  fill(150,150,255);
+  textAlign(CENTER, CENTER);
+  text(`You saved democracy! `, width/2, height/2);
+  pop();
+
+  image(imgDonald, width - imgDonald.width , height - imgDonald.height);
+}
+
+function instructions() {
+  push();
+  textSize(42);
+  textFont(myFont);
+  fill(65, 146, 240);
+  textAlign(CENTER, CENTER);
+  text(`Catch the letters and avoid the Donald!`, width/2, height/2);
+  image(imgLotsOfLetters, width/4, 0);
+  image(imgBigDonaldStealsMail, width-imgBigDonaldStealsMail.width, height - imgBigDonaldStealsMail.height);
+  pop();
+}
+
 
 function display() {
   // DISPLAY
@@ -133,7 +204,10 @@ function checkMailCatch() {
         mails[mailIdx].img = undefined;
         score += 1;
 
-        if (score === mailCount) win = true;
+        if (score === mailCount) {
+          win = true;
+          state = `win`;
+        }
       }
     }
   }
@@ -245,5 +319,13 @@ function checkKeys() {
     mailman.vy = mailman.speed;
   } else {
     mailman.vy = 0;
+  }
+}
+
+// --------------------------------- //
+// To start the simulation, click with the mouse
+function mousePressed(){
+  if (state === `title`){
+    state = `simulation`;
   }
 }
