@@ -11,6 +11,7 @@ You have one minute to collect 20 letters.
 // Images for decoration
 let imgLotsOfLetters;
 let imgBigDonaldStealsMail;
+let imgbigMailman;
 
 // Images for moving objects
 let imgMailman;
@@ -36,10 +37,11 @@ let donald = {
   attract: 300,
   attractIntensity: 2,
   repulsion: 500,
-  repulsionIntensity: 5
+  repulsionIntensity: 5,
 };
 
 const mailCount = 30;
+
 let mailParam = {
   initVX: 3,
   initVY: 3,
@@ -58,7 +60,7 @@ let bg = {
 let myFont;
 
 let score = 0;
-let win = false;
+let startTime;
 
 let state = `title`; // Can be title, simulation, win
 
@@ -85,12 +87,13 @@ function preload() {
   for (let mailIdx = 0; mailIdx < mailCount; mailIdx++)
     mails.push(createMail(loadImage("assets/images/mail.png")));
 
-    // Title state
-    imgBigDonaldStealsMail = loadImage("assets/images/bigdonaldstealsmail.png");
-    imgLotsOfLetters = loadImage("assets/images/lotsofletters.png");
+  // Title state
+  imgBigDonaldStealsMail = loadImage("assets/images/bigdonaldstealsmail.png");
+  imgLotsOfLetters = loadImage("assets/images/lotsofletters.png");
+  imgbigMailman = loadImage("assets/images/bigmailman.png");
 
   // Google Font: Secular One
-  myFont = loadFont('assets/fonts/SecularOne-Regular.ttf');
+  myFont = loadFont("assets/fonts/SecularOne-Regular.ttf");
 }
 
 // setup()
@@ -127,31 +130,45 @@ function draw() {
   // States management
   if (state === `title`) {
     title();
-  }
-  else if (state === `simulation`) {
+  } else if (state === `simulation`) {
     simulation();
-  }
-  else if (state === `win`) {
+  } else if (state === `win`) {
     democracySaved();
+  } else if (state === `lost`) {
+    donaldWon();
   }
-
 }
 
 //--- States ---//
 function title() {
   push();
+
+  // Title "Save democracy!"
   textSize(65);
-  textFont(myFont);
   fill(65, 146, 240);
   textAlign(CENTER, CENTER);
-  text(`Save democracy!`, width/2, height/2);
-  image(imgLotsOfLetters, width/4, 0);
-  image(imgBigDonaldStealsMail, width-imgBigDonaldStealsMail.width, height - imgBigDonaldStealsMail.height);
+  text(`Save democracy!`, width / 2, height / 2);
+
+  // Images of characters and letters
+  image(imgLotsOfLetters, width / 4, 0);
+  image(
+    imgBigDonaldStealsMail,
+    width - imgBigDonaldStealsMail.width,
+    height - imgBigDonaldStealsMail.height
+  );
+  image(imgbigMailman, 0, height - imgbigMailman.height);
+
+  // Instructions
+  textSize(35);
+  fill(42, 94, 155);
+  text(`Catch the letters and avoid the Donald!`, width / 2, height / 1.25);
+
   pop();
 }
 
 function simulation() {
   display();
+  displayTime(); // Display the time left
   move(); // Movement of the Donald
   checkKeys(); // Movement of the mailman
   checkMailCatch();
@@ -160,26 +177,48 @@ function simulation() {
 function democracySaved() {
   push();
   textSize(64);
-  fill(150,150,255);
+  fill(150, 150, 255);
   textAlign(CENTER, CENTER);
-  text(`You saved democracy! `, width/2, height/2);
+  text(`You saved democracy!`, width / 2, height / 2);
   pop();
 
-  image(imgDonald, width - imgDonald.width , height - imgDonald.height);
+  image(imgDonald, width - imgDonald.width, height - imgDonald.height);
 }
 
-function instructions() {
+function donaldWon() {
+  push();
+  textSize(64);
+  fill(150, 150, 255);
+  textAlign(CENTER, CENTER);
+  text(`The Donald won...`, width / 2, height / 2);
+  pop();
+
+  // The background turns dark...
+  bg.r = 36;
+  bg.g = 36;
+  bg.b = 36;
+
+  image(imgDonald, width - imgDonald.width, height - imgDonald.height);
+}
+
+//--------- Simulation --------//
+
+function displayTime() {
+  let remainingTime = 60 - (Date.now() - startTime) / 1000;
+
   push();
   textSize(42);
   textFont(myFont);
   fill(65, 146, 240);
-  textAlign(CENTER, CENTER);
-  text(`Catch the letters and avoid the Donald!`, width/2, height/2);
-  image(imgLotsOfLetters, width/4, 0);
-  image(imgBigDonaldStealsMail, width-imgBigDonaldStealsMail.width, height - imgBigDonaldStealsMail.height);
+  textAlign(LEFT);
+  text(`Time left: ${Math.round(remainingTime)}`, (width / 2) * 1.5, 50);
   pop();
-}
 
+  // If the remaining time is less than zero, you loose :(
+  if (remainingTime < 0) {
+    state = `lost`;
+  }
+}
 
 function display() {
   // DISPLAY
@@ -191,6 +230,7 @@ function display() {
       image(mails[mailIdx].img, mails[mailIdx].x, mails[mailIdx].y);
 }
 
+// Check if the mailman catches a mail by checking their respective positions
 function checkMailCatch() {
   for (let mailIdx = 0; mailIdx < mailCount; mailIdx++) {
     if (mails[mailIdx].img != undefined) {
@@ -205,7 +245,6 @@ function checkMailCatch() {
         score += 1;
 
         if (score === mailCount) {
-          win = true;
           state = `win`;
         }
       }
@@ -220,13 +259,13 @@ function move() {
 
   // Donald is attracted by the mailman.
   if (mailman.x + imgMailman.width / 2 > donald.x + imgDonald.width / 2)
-    donald.vx =  donald.attractIntensity;
+    donald.vx = donald.attractIntensity;
   else if (mailman.x + imgMailman.width / 2 < donald.x + imgDonald.width / 2)
-    donald.vx =  -donald.attractIntensity;
+    donald.vx = -donald.attractIntensity;
   if (mailman.y + imgMailman.height / 2 > donald.y + imgDonald.height / 2)
-    donald.vy =  donald.attractIntensity;
+    donald.vy = donald.attractIntensity;
   else if (mailman.y + imgMailman.height / 2 < donald.y + imgDonald.height / 2)
-    donald.vy =  -donald.attractIntensity;
+    donald.vy = -donald.attractIntensity;
 
   // Random change of direction for the Donald
   let change = random(); // Generate a random number between 0 and 1
@@ -242,9 +281,8 @@ function move() {
 
   for (let mailIdx = 0; mailIdx < mailCount; mailIdx++) {
     if (mails[mailIdx].img != undefined) {
-
       // Check screen limits.
-/*      if (
+      /*      if (
         mails[mailIdx].x <= mails[mailIdx].img.width / 2 ||
         mails[mailIdx].x > width - mails[mailIdx].img.width / 2
       )
@@ -255,28 +293,44 @@ function move() {
       )
         mails[mailIdx].vy = -mails[mailIdx].vy; */
 
-        if (mails[mailIdx].x <= mails[mailIdx].img.width / 2)
-          mails[mailIdx].x = width - mails[mailIdx].img.width / 2;
-        else if (mails[mailIdx].x > width - mails[mailIdx].img.width / 2)
-          mails[mailIdx].x = mails[mailIdx].img.width / 2;
+      if (mails[mailIdx].x <= mails[mailIdx].img.width / 2)
+        mails[mailIdx].x = width - mails[mailIdx].img.width / 2;
+      else if (mails[mailIdx].x > width - mails[mailIdx].img.width / 2)
+        mails[mailIdx].x = mails[mailIdx].img.width / 2;
 
-        if (mails[mailIdx].y <= mails[mailIdx].img.height / 2)
-          mails[mailIdx].y = height - mails[mailIdx].img.height / 2;
-        else if (mails[mailIdx].y > height - mails[mailIdx].img.height / 2)
-          mails[mailIdx].y = mails[mailIdx].img.height / 2;
+      if (mails[mailIdx].y <= mails[mailIdx].img.height / 2)
+        mails[mailIdx].y = height - mails[mailIdx].img.height / 2;
+      else if (mails[mailIdx].y > height - mails[mailIdx].img.height / 2)
+        mails[mailIdx].y = mails[mailIdx].img.height / 2;
 
-        let d2 = dist(mails[mailIdx].x, mails[mailIdx].y, donald.x, donald.y);
+      let d2 = dist(mails[mailIdx].x, mails[mailIdx].y, donald.x, donald.y);
 
-        if (d2 < donald.repulsion) {
-          if (mails[mailIdx].x + mails[mailIdx].img.width / 2 > donald.x + imgDonald.width / 2)
-            mails[mailIdx].vx += ((donald.repulsion - d2) / donald.repulsionIntensity) ;
-          else if (mails[mailIdx].x + mails[mailIdx].img.width / 2 < donald.x + imgDonald.width / 2)
-            mails[mailIdx].vx -= ((donald.repulsion - d2) / donald.repulsionIntensity)  ;
-          if (mails[mailIdx].y + mails[mailIdx].img.height / 2 > donald.y + imgDonald.height / 2)
-            mails[mailIdx].vy += ((donald.repulsion - d2) / donald.repulsionIntensity) ;
-          else if (mails[mailIdx].y + mails[mailIdx].img.height / 2 < donald.y + imgDonald.height / 2)
-            mails[mailIdx].vy -= ((donald.repulsion - d2) / donald.repulsionIntensity) ;
-        }
+      if (d2 < donald.repulsion) {
+        if (
+          mails[mailIdx].x + mails[mailIdx].img.width / 2 >
+          donald.x + imgDonald.width / 2
+        )
+          mails[mailIdx].vx +=
+            (donald.repulsion - d2) / donald.repulsionIntensity;
+        else if (
+          mails[mailIdx].x + mails[mailIdx].img.width / 2 <
+          donald.x + imgDonald.width / 2
+        )
+          mails[mailIdx].vx -=
+            (donald.repulsion - d2) / donald.repulsionIntensity;
+        if (
+          mails[mailIdx].y + mails[mailIdx].img.height / 2 >
+          donald.y + imgDonald.height / 2
+        )
+          mails[mailIdx].vy +=
+            (donald.repulsion - d2) / donald.repulsionIntensity;
+        else if (
+          mails[mailIdx].y + mails[mailIdx].img.height / 2 <
+          donald.y + imgDonald.height / 2
+        )
+          mails[mailIdx].vy -=
+            (donald.repulsion - d2) / donald.repulsionIntensity;
+      }
 
       // Be sure not to overspeed (because we don't like tickets).
       if (mails[mailIdx].vx > 0 && mails[mailIdx].vx > mailParam.maxVX)
@@ -324,8 +378,10 @@ function checkKeys() {
 
 // --------------------------------- //
 // To start the simulation, click with the mouse
-function mousePressed(){
-  if (state === `title`){
+// When the mouse is pressed, the simulation starts and the countdown starts too.
+function mousePressed() {
+  if (state === `title`) {
     state = `simulation`;
+    startTime = Date.now();
   }
 }
