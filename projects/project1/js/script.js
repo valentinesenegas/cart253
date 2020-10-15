@@ -3,9 +3,9 @@
 Project 1
 Valentine Sénégas
 
-Collect the votes before the Donald !
+Collect the votes before the Donald scares the mails!
 Use the arrow keys to move around !
-You have one minute to collect 20 letters.
+You have one minute to collect 30 mails.
 **************************************************/
 
 // Images for decoration
@@ -40,6 +40,8 @@ let donald = {
   repulsionIntensity: 5,
 };
 
+
+// Number of mails that the mailman will have to catch
 const mailCount = 30;
 
 let mailParam = {
@@ -62,8 +64,11 @@ let myFont;
 let score = 0;
 let startTime;
 
-let state = `title`; // Can be title, simulation, win
+let state = `title`; // Can be title, simulation, win or lost
 
+// createMail(imgParam)
+//
+// Creation of the mail and its parameters. Returns mail
 function createMail(imgParam) {
   let mail = {
     x: 0,
@@ -84,6 +89,7 @@ function preload() {
   imgMailman = loadImage("assets/images/mailman.png");
   imgDonald = loadImage("assets/images/donald.png");
 
+  // Mail
   for (let mailIdx = 0; mailIdx < mailCount; mailIdx++)
     mails.push(createMail(loadImage("assets/images/mail.png")));
 
@@ -98,16 +104,20 @@ function preload() {
 
 // setup()
 //
-// Creation of the canvas, position of the letters
+// Creation of the canvas, position of the mails
 function setup() {
   createCanvas(1400, 900);
   textFont(myFont);
   setupMails();
 }
 
+// setupMails()
+//
+// Creation of the mails at random positions going in random directions at random speed! So much randomness...
 function setupMails() {
   // Create mails
   for (let mailIdx = 0; mailIdx < mailCount; mailIdx++) {
+    // Position
     mails[mailIdx].x = random(
       mails[mailIdx].img.width / 2,
       width - mails[mailIdx].img.width / 2
@@ -116,6 +126,8 @@ function setupMails() {
       mails[mailIdx].img.height / 2,
       height - mails[mailIdx].img.height / 2
     );
+
+    // Speed
     mails[mailIdx].vx = random(-mailParam.initVX, mailParam.initVX);
     mails[mailIdx].vy = random(-mailParam.initVY, mailParam.initVY);
   }
@@ -123,7 +135,7 @@ function setupMails() {
 
 // draw()
 //
-// Description of draw() goes here.
+// Background color and States management (title, simulation, win, lost)
 function draw() {
   background(bg.r, bg.g, bg.b);
 
@@ -140,6 +152,8 @@ function draw() {
 }
 
 //--- States ---//
+
+// Title
 function title() {
   push();
 
@@ -149,7 +163,7 @@ function title() {
   textAlign(CENTER, CENTER);
   text(`Save democracy!`, width / 2, height / 2);
 
-  // Images of characters and letters
+  // Images of characters and mails
   image(imgLotsOfLetters, width / 4, 0);
   image(
     imgBigDonaldStealsMail,
@@ -161,19 +175,21 @@ function title() {
   // Instructions
   textSize(35);
   fill(42, 94, 155);
-  text(`Catch the letters and avoid the Donald!`, width / 2, height / 1.25);
+  text(`Catch the mails and avoid the Donald!`, width / 2, height / 1.25);
 
   pop();
 }
 
+// The actual game!
 function simulation() {
   display();
   displayTime(); // Display the time left
   move(); // Movement of the Donald
   checkKeys(); // Movement of the mailman
-  checkMailCatch();
+  checkMailCatch(); // Check if the mailman catches mail
 }
 
+// When winning the game
 function democracySaved() {
   push();
   textSize(64);
@@ -185,6 +201,7 @@ function democracySaved() {
   image(imgDonald, width - imgDonald.width, height - imgDonald.height);
 }
 
+// When loosing the game
 function donaldWon() {
   push();
   textSize(64);
@@ -203,6 +220,9 @@ function donaldWon() {
 
 //--------- Simulation --------//
 
+// displayTime()
+//
+// Display the remaining time to collect the mails
 function displayTime() {
   let remainingTime = 60 - (Date.now() - startTime) / 1000;
 
@@ -211,6 +231,7 @@ function displayTime() {
   textFont(myFont);
   fill(65, 146, 240);
   textAlign(LEFT);
+  // We don't want the decimals of Date.now(), so I use Math.round to round the time left the nearest integer
   text(`Time left: ${Math.round(remainingTime)}`, (width / 2) * 1.5, 50);
   pop();
 
@@ -220,17 +241,24 @@ function displayTime() {
   }
 }
 
+// display()
+//
+// Display the elements: the mailman, the Donald and the mails
 function display() {
-  // DISPLAY
   imageMode(CENTER);
+    // Mailman
   image(imgMailman, mailman.x, mailman.y);
+    // The Donald
   image(imgDonald, donald.x, donald.y);
+  // Mail
   for (let mailIdx = 0; mailIdx < mailCount; mailIdx++)
     if (mails[mailIdx].img != undefined)
       image(mails[mailIdx].img, mails[mailIdx].x, mails[mailIdx].y);
 }
 
-// Check if the mailman catches a mail by checking their respective positions
+// checkMailCatch()
+//
+// Check if the mailman catches a mail by looking at their respective positions
 function checkMailCatch() {
   for (let mailIdx = 0; mailIdx < mailCount; mailIdx++) {
     if (mails[mailIdx].img != undefined) {
@@ -240,10 +268,12 @@ function checkMailCatch() {
         mailman.y < mails[mailIdx].y + mails[mailIdx].img.height &&
         mailman.y + imgMailman.height > mails[mailIdx].y
       ) {
-        // Collision detected
+        // Collision detected:
+        // The mail disappears and the score is incremented by 1.
         mails[mailIdx].img = undefined;
         score += 1;
 
+        // If the score is equal to the number of mail collected, the user wins!
         if (score === mailCount) {
           state = `win`;
         }
@@ -252,6 +282,9 @@ function checkMailCatch() {
   }
 }
 
+// move()
+//
+// Movement of everything: the mailman, the Donald and the mail.
 function move() {
   // Mailman
   mailman.x = mailman.x + mailman.vx;
@@ -272,13 +305,14 @@ function move() {
 
   // Change direction 1% of the time
   if (change < 0.01) {
-    // Choose random velocities within the "speed limit"
+    // Choose random velocities within the "speed limit". Donald, don't go too fast!
     donald.vx = random(-donald.speed, donald.speed);
     donald.vy = random(-donald.speed, donald.speed);
   }
   donald.x = donald.x + donald.vx;
   donald.y = donald.y + donald.vy;
 
+    // Movement of the mail
   for (let mailIdx = 0; mailIdx < mailCount; mailIdx++) {
     if (mails[mailIdx].img != undefined) {
       // Check screen limits.
@@ -303,6 +337,8 @@ function move() {
       else if (mails[mailIdx].y > height - mails[mailIdx].img.height / 2)
         mails[mailIdx].y = mails[mailIdx].img.height / 2;
 
+
+      // The Donald scares the mail
       let d2 = dist(mails[mailIdx].x, mails[mailIdx].y, donald.x, donald.y);
 
       if (d2 < donald.repulsion) {
@@ -348,6 +384,12 @@ function move() {
   }
 }
 
+// --------------------------------------------- //
+//  USER CONTROLS  //
+
+// checkKeys()
+//
+// Checks if the user presses down on an arrow. This makes the mailman move
 function checkKeys() {
   // Allows the user to move the mailman using the arrow keys!
 
@@ -376,7 +418,8 @@ function checkKeys() {
   }
 }
 
-// --------------------------------- //
+// mousePressed()
+//
 // To start the simulation, click with the mouse
 // When the mouse is pressed, the simulation starts and the countdown starts too.
 function mousePressed() {
