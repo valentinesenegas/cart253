@@ -3,29 +3,16 @@
 Project 1
 Valentine Sénégas
 
-Collect the votes before the Donald scares the mails!
-Use the arrow keys to move around !
+Collect the mails (votes) before time runs out!
+Beware, the Donald scares the mails!
+Use the arrow keys to move around.
 You have one minute to collect 30 mails.
 **************************************************/
 
-// ---- Constants ---- //
-// Number of mails that the mailman will have to catch
-const mailCount = 30;
+// ---- Global Variables ---- //
 
-// Time allowed to collect the mail in seconds
-const timeAllowed = 60;
-
-// ---- Variables ---- //
-// Images for decoration
-let imgLotsOfLetters;
-let imgBigDonaldStealsMail;
-let imgbigMailman;
-
-// Images for moving objects
+// MailMan
 let imgMailman;
-
-let imgDonald;
-
 let mailman = {
   x: 120,
   y: 120,
@@ -35,6 +22,8 @@ let mailman = {
   speed: 5,
 };
 
+// The Donald
+let imgDonald;
 let donald = {
   x: 280,
   y: 180,
@@ -48,14 +37,35 @@ let donald = {
   repulsionIntensity: 5,
 };
 
+// Mail
 let mailParam = {
   initVX: 3,
   initVY: 3,
   maxVX: 5,
   maxVY: 5,
 };
-
 let mails = Array();
+
+// Number of mails that the mailman will have to catch
+const mailCount = 30;
+// Time allowed to collect the mail in seconds
+const timeAllowed = 60;
+
+let score = 0;
+let startTime;
+
+//Decorative images, font, background
+let imgLotsOfLetters;
+let imgBigDonaldStealsMail;
+let imgbigMailman;
+
+// Images when winning
+let imgBigMailmanHappy;
+let imgBigDonaldSad;
+
+// Images when loosing
+let imgBigMailmanSad;
+let imgBigDonaldHappy;
 
 let bg = {
   r: 186,
@@ -65,15 +75,15 @@ let bg = {
 
 let myFont;
 
-let score = 0;
-let startTime;
-
 // Music
 let musicSimulation;
 let musicHappyEnd;
 let musicSadEnd;
 
 let state = `title`; // Can be title, simulation, win or lost
+
+
+// ---- Functions ---- //
 
 // createMail(imgParam)
 //
@@ -106,6 +116,14 @@ function preload() {
   imgBigDonaldStealsMail = loadImage("assets/images/bigdonaldstealsmail.png");
   imgLotsOfLetters = loadImage("assets/images/lotsofletters.png");
   imgbigMailman = loadImage("assets/images/bigmailman.png");
+
+  // "Win" state
+  imgBigDonaldSad = loadImage("assets/images/bigdonaldsad.png");
+  imgBigMailmanHappy = loadImage("assets/images/bigmailmanhappy.png");
+
+  // "Lost" state
+  imgBigDonaldHappy = loadImage("assets/images/bigdonaldhappy.png");
+  imgBigMailmanSad = loadImage("assets/images/bigmailmansad.png");
 
   // Google Font: Secular One
   myFont = loadFont("assets/fonts/SecularOne-Regular.ttf");
@@ -204,36 +222,38 @@ function simulation() {
   tryMusicSimulation();
 }
 
-// When winning the game
+// When winning the game - `Win` state
 function democracySaved() {
   push();
   textSize(64);
-  fill(150, 150, 255);
+  fill(42, 94, 155);
   textAlign(CENTER, CENTER);
   text(`You saved democracy!`, width / 2, height / 2);
 
-  image(imgDonald, width - imgDonald.width, height - imgDonald.height);
+  image(imgBigDonaldSad, width - imgBigDonaldSad.width -30, height - imgBigDonaldSad.height);
+  image(imgBigMailmanHappy, 70, height - imgBigMailmanHappy.height);
 
   pop();
   // Happy music!
   tryMusicHappyEnd();
 }
 
-// When loosing the game
+// When loosing the game - `Lost` state
 function donaldWon() {
   push();
   textSize(64);
   fill(150, 150, 255);
   textAlign(CENTER, CENTER);
   text(`The Donald won...`, width / 2, height / 2);
-  pop();
 
   image(
-    imgBigDonaldStealsMail,
-    width - imgBigDonaldStealsMail.width,
-    height - imgBigDonaldStealsMail.height
+    imgBigDonaldHappy,
+    width - imgBigDonaldHappy.width - 4,
+    height - imgBigDonaldHappy.height
   );
+  image(imgBigMailmanSad, 70, height - imgBigMailmanSad.height);
 
+  pop();
   // The background turns dark...
   bg.r = 36;
   bg.g = 36;
