@@ -8,6 +8,14 @@ Use the arrow keys to move around !
 You have one minute to collect 30 mails.
 **************************************************/
 
+// ---- Constants ---- //
+// Number of mails that the mailman will have to catch
+const mailCount = 30;
+
+// Time allowed to collect the mail in seconds
+const timeAllowed = 60;
+
+// ---- Variables ---- //
 // Images for decoration
 let imgLotsOfLetters;
 let imgBigDonaldStealsMail;
@@ -40,10 +48,6 @@ let donald = {
   repulsionIntensity: 5,
 };
 
-
-// Number of mails that the mailman will have to catch
-const mailCount = 30;
-
 let mailParam = {
   initVX: 3,
   initVY: 3,
@@ -63,6 +67,11 @@ let myFont;
 
 let score = 0;
 let startTime;
+
+// Music
+let musicSimulation;
+let musicHappyEnd;
+let musicSadEnd;
 
 let state = `title`; // Can be title, simulation, win or lost
 
@@ -100,6 +109,11 @@ function preload() {
 
   // Google Font: Secular One
   myFont = loadFont("assets/fonts/SecularOne-Regular.ttf");
+
+  // Music and sounds
+  musicSimulation = loadSound(`assets/sounds/Kubbi - Up In My Jam.mp3`);
+  musicHappyEnd = loadSound(`assets/sounds/Tristan Lohengrin - Happy.mp3`);
+  musicSadEnd = loadSound(`assets/sounds/Sad Violin.mp3`);
 }
 
 // setup()
@@ -185,8 +199,9 @@ function simulation() {
   display();
   displayTime(); // Display the time left
   move(); // Movement of the Donald
-  checkKeys(); // Movement of the mailman
+  checkKeys(); // Check if the user conttrols the movement of the mailman
   checkMailCatch(); // Check if the mailman catches mail
+  tryMusicSimulation();
 }
 
 // When winning the game
@@ -196,9 +211,12 @@ function democracySaved() {
   fill(150, 150, 255);
   textAlign(CENTER, CENTER);
   text(`You saved democracy!`, width / 2, height / 2);
-  pop();
 
   image(imgDonald, width - imgDonald.width, height - imgDonald.height);
+
+  pop();
+  // Happy music!
+  tryMusicHappyEnd();
 }
 
 // When loosing the game
@@ -210,12 +228,54 @@ function donaldWon() {
   text(`The Donald won...`, width / 2, height / 2);
   pop();
 
+  image(
+    imgBigDonaldStealsMail,
+    width - imgBigDonaldStealsMail.width,
+    height - imgBigDonaldStealsMail.height
+  );
+
   // The background turns dark...
   bg.r = 36;
   bg.g = 36;
   bg.b = 36;
 
-  image(imgDonald, width - imgDonald.width, height - imgDonald.height);
+  // A sad music starts playing dramatically
+  tryMusicSadEnd();
+}
+
+//--------- Music --------//
+  // Music for the simulation
+function tryMusicSimulation() {
+  // Play music if the music is not already playing
+  if (!musicSimulation.isPlaying()) {
+    musicSimulation.loop();
+  }
+}
+
+// Music Happy ending
+function tryMusicHappyEnd() {
+  // Stop the music from the simulation
+  if (musicSimulation.isPlaying()) {
+    musicSimulation.pause();
+  }
+
+  // Play music if the music is not already playing
+  if (!musicHappyEnd.isPlaying()) {
+    musicHappyEnd.loop();
+  }
+}
+
+// Music Sad ending
+function tryMusicSadEnd() {
+  // Stop the music from the simulation
+  if (musicSimulation.isPlaying()) {
+    musicSimulation.pause();
+  }
+
+  // Play music if the music is not already playing
+  if (!musicSadEnd.isPlaying()) {
+    musicSadEnd.loop();
+  }
 }
 
 //--------- Simulation --------//
@@ -224,7 +284,7 @@ function donaldWon() {
 //
 // Display the remaining time to collect the mails
 function displayTime() {
-  let remainingTime = 60 - (Date.now() - startTime) / 1000;
+  let remainingTime = timeAllowed - (Date.now() - startTime) / 1000;
 
   push();
   textSize(42);
@@ -246,9 +306,9 @@ function displayTime() {
 // Display the elements: the mailman, the Donald and the mails
 function display() {
   imageMode(CENTER);
-    // Mailman
+  // Mailman
   image(imgMailman, mailman.x, mailman.y);
-    // The Donald
+  // The Donald
   image(imgDonald, donald.x, donald.y);
   // Mail
   for (let mailIdx = 0; mailIdx < mailCount; mailIdx++)
@@ -290,6 +350,17 @@ function move() {
   mailman.x = mailman.x + mailman.vx;
   mailman.y = mailman.y + mailman.vy;
 
+  mailman.x = constrain(
+    mailman.x,
+    0 + imgMailman.width / 2,
+    width - imgMailman.width / 2
+  );
+  mailman.y = constrain(
+    mailman.y,
+    0 + imgMailman.height / 2,
+    height - imgMailman.height / 2
+  );
+
   // Donald is attracted by the mailman.
   if (mailman.x + imgMailman.width / 2 > donald.x + imgDonald.width / 2)
     donald.vx = donald.attractIntensity;
@@ -312,7 +383,7 @@ function move() {
   donald.x = donald.x + donald.vx;
   donald.y = donald.y + donald.vy;
 
-    // Movement of the mail
+  // Movement of the mail
   for (let mailIdx = 0; mailIdx < mailCount; mailIdx++) {
     if (mails[mailIdx].img != undefined) {
       // Check screen limits.
@@ -336,7 +407,6 @@ function move() {
         mails[mailIdx].y = height - mails[mailIdx].img.height / 2;
       else if (mails[mailIdx].y > height - mails[mailIdx].img.height / 2)
         mails[mailIdx].y = mails[mailIdx].img.height / 2;
-
 
       // The Donald scares the mail
       let d2 = dist(mails[mailIdx].x, mails[mailIdx].y, donald.x, donald.y);
