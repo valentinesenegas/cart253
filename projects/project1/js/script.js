@@ -1,6 +1,6 @@
 "use strict";
 /**************************************************
-Project 1
+Project 1: Save Democracy
 Valentine Sénégas
 
 Collect the mails (votes) before time runs out!
@@ -14,9 +14,8 @@ You have one minute to collect 30 mails.
 // MailMan
 let imgMailman;
 let mailman = {
-  x: 120,
-  y: 120,
-  size: 141,
+  x: 0,
+  y: 0,
   vx: 1,
   vy: 1,
   speed: 5,
@@ -25,54 +24,67 @@ let mailman = {
 // The Donald
 let imgDonald;
 let donald = {
-  x: 280,
-  y: 180,
-  size: 141,
+  x: 0,
+  y: 0,
   vx: 1,
   vy: 1,
   speed: 2,
   attract: 300,
   attractIntensity: 2,
-  repulsion: 500,
-  repulsionIntensity: 5,
+  repulsion: 400,
+  repulsionIntensity: 4,
 };
 
 // Mail
 let mailParam = {
   initVX: 3,
   initVY: 3,
-  maxVX: 5,
-  maxVY: 5,
+  minVX: 1,
+  minVY: 1,
+  maxVX: 4,
+  maxVY: 4,
 };
 let mails = Array();
 
-// Number of mails that the mailman will have to catch
+// Number of mails that the mailman will have to catch and current score
 const mailCount = 30;
-// Time allowed to collect the mail in seconds
-const timeAllowed = 60;
-
 let score = 0;
+
+// Time allowed to collect the mail in seconds and start time
+const timeAllowed = 60;
 let startTime;
 
-//Decorative images, font, background
-let imgLotsOfLetters;
+//Images used in the Title state
+let imgLotsOfMails;
 let imgBigDonaldStealsMail;
 let imgbigMailman;
 
-// Images when winning
+// Images when winning (win state)
 let imgBigMailmanHappy;
 let imgBigDonaldSad;
 
-// Images when loosing
+// Images when loosing (lost state)
 let imgBigMailmanSad;
 let imgBigDonaldHappy;
 
-let bg = {
+// Background during the game
+let bg;
+
+// Initial background
+let bgLight = {
   r: 186,
   g: 219,
   b: 250,
 };
 
+// Background when lost
+let bgDark = {
+  r: 36,
+  g: 36,
+  b: 36,
+};
+
+// Font used by the program
 let myFont;
 
 // Music
@@ -80,7 +92,13 @@ let musicSimulation;
 let musicHappyEnd;
 let musicSadEnd;
 
-let state = `title`; // Can be title, simulation, win or lost
+// Variable that contains the current state.
+// The states are:
+//  - title: this is the start screen that explains the game.
+//  - simulation: this is the main loop of the game.
+//  - win: the player wins.
+//  - lost: the player lost / the Donald wins.
+let state = `title`;  // Can be title, simulation, win or lost
 
 
 // ---- Functions ---- //
@@ -95,6 +113,7 @@ function createMail(imgParam) {
     vx: 0,
     vy: 0,
     img: undefined,
+    caught: false
   };
   mail.img = imgParam;
   return mail;
@@ -114,7 +133,7 @@ function preload() {
 
   // Title state
   imgBigDonaldStealsMail = loadImage("assets/images/bigdonaldstealsmail.png");
-  imgLotsOfLetters = loadImage("assets/images/lotsofletters.png");
+  imgLotsOfMails = loadImage("assets/images/lotsofmails.png");
   imgbigMailman = loadImage("assets/images/bigmailman.png");
 
   // "Win" state
@@ -138,9 +157,11 @@ function preload() {
 //
 // Creation of the canvas, position of the mails
 function setup() {
-  createCanvas(1400, 900);
+  createCanvas(windowWidth, windowHeight);
   textFont(myFont);
   setupMails();
+  setupCharacters();
+  bg = bgLight;
 }
 
 // setupMails()
@@ -150,19 +171,29 @@ function setupMails() {
   // Create mails
   for (let mailIdx = 0; mailIdx < mailCount; mailIdx++) {
     // Position
-    mails[mailIdx].x = random(
-      mails[mailIdx].img.width / 2,
-      width - mails[mailIdx].img.width / 2
-    );
-    mails[mailIdx].y = random(
-      mails[mailIdx].img.height / 2,
-      height - mails[mailIdx].img.height / 2
-    );
+    mails[mailIdx].x = random(mails[mailIdx].img.width / 2, width - mails[mailIdx].img.width / 2);
+    mails[mailIdx].y = random(mails[mailIdx].img.height / 2, height - mails[mailIdx].img.height / 2);
 
     // Speed
     mails[mailIdx].vx = random(-mailParam.initVX, mailParam.initVX);
     mails[mailIdx].vy = random(-mailParam.initVY, mailParam.initVY);
+
+    // Mail is not caught yet.
+    mails[mailIdx].caught = false;
   }
+}
+
+// setupCharacters()
+//
+// Creation of the mailman and the Donald, and position them at opposite corners
+function setupCharacters() {
+  // Put the mailman in the top left corner of the screen
+  mailman.x = (width / 10);
+  mailman.y = (height / 10);
+
+  // Put the Donald in the bottom right corner of the screen
+  donald.x = (width / 10) * 9 - imgDonald.width;
+  donald.y = (height / 10) * 9 - imgDonald.height;
 }
 
 // draw()
@@ -181,14 +212,20 @@ function draw() {
   } else if (state === `lost`) {
     donaldWon();
   }
+
+  // Check input from the user
+  checkKeys();
 }
 
-//--- States ---//
+//--------- States --------//
 
-// Title
+// title()
+//
+// This is the start screen that explains the game.
 function title() {
-  push();
+  bg = bgLight;
 
+  push();
   // Title "Save democracy!"
   textSize(65);
   fill(65, 146, 240);
@@ -196,109 +233,80 @@ function title() {
   text(`Save democracy!`, width / 2, height / 2);
 
   // Images of characters and mails
-  image(imgLotsOfLetters, width / 4, 0);
-  image(
-    imgBigDonaldStealsMail,
-    width - imgBigDonaldStealsMail.width,
-    height - imgBigDonaldStealsMail.height
-  );
+  imageMode(CORNER);
+  image(imgLotsOfMails, width / 4, 0);
+  image(imgBigDonaldStealsMail, width - imgBigDonaldStealsMail.width, height - imgBigDonaldStealsMail.height);
   image(imgbigMailman, 0, height - imgbigMailman.height);
 
   // Instructions
   textSize(35);
   fill(42, 94, 155);
-  text(`Catch the mails and avoid the Donald!`, width / 2, height / 1.25);
-
+  text(`Catch the mails before it's too late! \n Press Enter to start`, width / 2, height / 1.25);
   pop();
 }
 
-// The actual game!
+// simulation()
+//
+// This is the main loop of the game.
 function simulation() {
   display();
   displayTime(); // Display the time left
   move(); // Movement of the Donald
-  checkKeys(); // Check if the user conttrols the movement of the mailman
   checkMailCatch(); // Check if the mailman catches mail
   tryMusicSimulation();
+
+  bg = bgLight;
 }
 
+// democracySaved()
+//
 // When winning the game - `Win` state
 function democracySaved() {
+  bg = bgLight;
+
   push();
   textSize(64);
   fill(42, 94, 155);
   textAlign(CENTER, CENTER);
   text(`You saved democracy!`, width / 2, height / 2);
 
-  image(imgBigDonaldSad, width - imgBigDonaldSad.width -30, height - imgBigDonaldSad.height);
-  image(imgBigMailmanHappy, 70, height - imgBigMailmanHappy.height);
+  textSize(35);
+  text(`Press Enter to play again`, width / 2, height / 1.25);
 
+  imageMode(CORNER);
+  image(imgBigDonaldSad, width - imgBigDonaldSad.width, height - imgBigDonaldSad.height);
+  image(imgBigMailmanHappy, 0, height - imgBigMailmanHappy.height);
   pop();
+
   // Happy music!
   tryMusicHappyEnd();
 }
 
-// When loosing the game - `Lost` state
+// donaldWon()
+//
+// When loosing the game - `lost` state
 function donaldWon() {
+  // The background turns dark...
+  bg = bgDark;
+
   push();
   textSize(64);
   fill(150, 150, 255);
   textAlign(CENTER, CENTER);
   text(`The Donald won...`, width / 2, height / 2);
 
-  image(
-    imgBigDonaldHappy,
-    width - imgBigDonaldHappy.width - 4,
-    height - imgBigDonaldHappy.height
-  );
-  image(imgBigMailmanSad, 70, height - imgBigMailmanSad.height);
+  textSize(35);
+  fill(255, 255, 255);
+  text(`Press Enter to play again`, width / 2, height / 1.25);
 
+  imageMode(CORNER);
+  image(imgBigDonaldHappy,width - imgBigDonaldHappy.width, height - imgBigDonaldHappy.height);
+  image(imgBigMailmanSad, 0, height - imgBigMailmanSad.height);
   pop();
-  // The background turns dark...
-  bg.r = 36;
-  bg.g = 36;
-  bg.b = 36;
 
   // A sad music starts playing dramatically
   tryMusicSadEnd();
 }
-
-//--------- Music --------//
-  // Music for the simulation
-function tryMusicSimulation() {
-  // Play music if the music is not already playing
-  if (!musicSimulation.isPlaying()) {
-    musicSimulation.loop();
-  }
-}
-
-// Music Happy ending
-function tryMusicHappyEnd() {
-  // Stop the music from the simulation
-  if (musicSimulation.isPlaying()) {
-    musicSimulation.pause();
-  }
-
-  // Play music if the music is not already playing
-  if (!musicHappyEnd.isPlaying()) {
-    musicHappyEnd.loop();
-  }
-}
-
-// Music Sad ending
-function tryMusicSadEnd() {
-  // Stop the music from the simulation
-  if (musicSimulation.isPlaying()) {
-    musicSimulation.pause();
-  }
-
-  // Play music if the music is not already playing
-  if (!musicSadEnd.isPlaying()) {
-    musicSadEnd.loop();
-  }
-}
-
-//--------- Simulation --------//
 
 // displayTime()
 //
@@ -332,7 +340,7 @@ function display() {
   image(imgDonald, donald.x, donald.y);
   // Mail
   for (let mailIdx = 0; mailIdx < mailCount; mailIdx++)
-    if (mails[mailIdx].img != undefined)
+    if (mails[mailIdx].caught === false)
       image(mails[mailIdx].img, mails[mailIdx].x, mails[mailIdx].y);
 }
 
@@ -341,7 +349,7 @@ function display() {
 // Check if the mailman catches a mail by looking at their respective positions
 function checkMailCatch() {
   for (let mailIdx = 0; mailIdx < mailCount; mailIdx++) {
-    if (mails[mailIdx].img != undefined) {
+    if (mails[mailIdx].caught === false) {
       if (
         mailman.x < mails[mailIdx].x + mails[mailIdx].img.width &&
         mailman.x + imgMailman.width > mails[mailIdx].x &&
@@ -350,7 +358,7 @@ function checkMailCatch() {
       ) {
         // Collision detected:
         // The mail disappears and the score is incremented by 1.
-        mails[mailIdx].img = undefined;
+        mails[mailIdx].caught = true;
         score += 1;
 
         // If the score is equal to the number of mail collected, the user wins!
@@ -405,19 +413,8 @@ function move() {
 
   // Movement of the mail
   for (let mailIdx = 0; mailIdx < mailCount; mailIdx++) {
-    if (mails[mailIdx].img != undefined) {
+    if (mails[mailIdx].caught === false) {
       // Check screen limits.
-      /*      if (
-        mails[mailIdx].x <= mails[mailIdx].img.width / 2 ||
-        mails[mailIdx].x > width - mails[mailIdx].img.width / 2
-      )
-        mails[mailIdx].vx = -mails[mailIdx].vx;
-      if (
-        mails[mailIdx].y <= mails[mailIdx].img.height / 2 ||
-        mails[mailIdx].y > height - mails[mailIdx].img.height / 2
-      )
-        mails[mailIdx].vy = -mails[mailIdx].vy; */
-
       if (mails[mailIdx].x <= mails[mailIdx].img.width / 2)
         mails[mailIdx].x = width - mails[mailIdx].img.width / 2;
       else if (mails[mailIdx].x > width - mails[mailIdx].img.width / 2)
@@ -458,7 +455,7 @@ function move() {
             (donald.repulsion - d2) / donald.repulsionIntensity;
       }
 
-      // Be sure not to overspeed (because we don't like tickets).
+      // Be sure not to overspeed (because we don't like tickets)
       if (mails[mailIdx].vx > 0 && mails[mailIdx].vx > mailParam.maxVX)
         mails[mailIdx].vx = mailParam.maxVX;
       else if (mails[mailIdx].vx < 0 && mails[mailIdx].vx < -mailParam.maxVX)
@@ -468,6 +465,13 @@ function move() {
       else if (mails[mailIdx].vy < 0 && mails[mailIdx].vy < -mailParam.maxVY)
         mails[mailIdx].vy = -mailParam.maxVY;
 
+      // Be sure that we have at least the minimal speed
+      if (mails[mailIdx].vx === 0)
+        mails[mailIdx].vx = mails[mailIdx].minVX * (Random(-1, 1) > 0 ?  1 : -1);
+      if (mails[mailIdx].vy === 0)
+        mails[mailIdx].vy = mails[mailIdx].minVY * (Random(-1, 1) > 0 ?  1 : -1);
+
+      // Update position with current speed
       mails[mailIdx].x += mails[mailIdx].vx;
       mails[mailIdx].y += mails[mailIdx].vy;
     }
@@ -479,10 +483,10 @@ function move() {
 
 // checkKeys()
 //
-// Checks if the user presses down on an arrow. This makes the mailman move
+// Checks if the user presses down on a key
 function checkKeys() {
-  // Allows the user to move the mailman using the arrow keys!
 
+  // Allows the user to move the mailman using the arrow keys!
   if (keyIsDown(LEFT_ARROW)) {
     // If it is, set the x velocity to be negative
     mailman.vx = -mailman.speed;
@@ -506,15 +510,79 @@ function checkKeys() {
   } else {
     mailman.vy = 0;
   }
+
+// To start the simulation, press the ENTER key
+  if (keyIsDown(ENTER)) {
+    if (state === `title`) {
+      state = `simulation`;
+      startTime = Date.now();
+    } else if (state === `win`) {
+      state = `simulation`;
+      setupMails();
+      setupCharacters();
+      score = 0;
+      startTime = Date.now();
+    } else if (state === `lost`) {
+      state = `simulation`;
+      setupMails();
+      setupCharacters();
+      score = 0;
+      startTime = Date.now();
+    }
+  }
 }
 
-// mousePressed()
-//
-// To start the simulation, click with the mouse
-// When the mouse is pressed, the simulation starts and the countdown starts too.
-function mousePressed() {
-  if (state === `title`) {
-    state = `simulation`;
-    startTime = Date.now();
+
+
+//--------- Music --------//
+// Music for the simulation
+function tryMusicSimulation() {
+  // If the player plays again, stop the music from the last ending
+  pauseMusicEnd();
+
+  // Play music if the music is not already playing
+  if (!musicSimulation.isPlaying()) {
+    musicSimulation.loop();
+  }
+}
+
+// Music Happy ending
+function tryMusicHappyEnd() {
+  // Stop the music from the simulation
+  pauseMusicSimulation();
+
+  // Play music if the music is not already playing
+  if (!musicHappyEnd.isPlaying()) {
+    musicHappyEnd.loop();
+  }
+}
+
+// Music Sad ending
+function tryMusicSadEnd() {
+  // Stop the music from the simulation
+  pauseMusicSimulation();
+
+  // Play music if the music is not already playing
+  if (!musicSadEnd.isPlaying()) {
+    musicSadEnd.loop();
+  }
+}
+
+function pauseMusicEnd() {
+  // Stop the music from the sad end
+  if (musicSadEnd.isPlaying()) {
+    musicSadEnd.pause();
+  }
+
+  // Stop the music from the happy end
+  if (musicHappyEnd.isPlaying()) {
+    musicHappyEnd.pause();
+  }
+}
+
+function pauseMusicSimulation() {
+  // Stop the music from the simulation
+  if (musicSimulation.isPlaying()) {
+    musicSimulation.pause();
   }
 }
