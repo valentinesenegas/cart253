@@ -3,13 +3,14 @@
 Exercise 04: The Age of Aquariums
 Valentine Sénégas
 
-Here is a description of this template p5 project.
+Catch the candies!
 **************************************************/
 
-// Our candies
+// Candies
 let candies = [];
 let candiesNumber = 4;
 
+// Images
 let imgGhost;
 let imgCandy1;
 
@@ -18,11 +19,13 @@ let ghost = {
   y: 70,
   vx: 1,
   vy: 1,
-  speed: 3
+  speed: 4
 }
 
 let score = 0;
 let state = `simulation`;
+
+const timeAllowed = 500;
 
 // preload()
 //
@@ -74,7 +77,7 @@ function createCandy(imgParam) {
 // draw()
 // Moves and displays our candy
 function draw() {
-  background(0);
+  background(94, 50, 186);
 
   // Use a for loop to count from 0 up to 3
   // and move the candy at that index in the candies array each time and display the candy
@@ -95,18 +98,36 @@ function draw() {
 
 }
 
+function timer() {
+  if (frameCount > timeAllowed) {
+    state = `lost`;
+  }
+}
+
 function simulation() {
   displayUser();
   moveUser();
   checkOverlap();
+  timer();
 }
 
 function youWon() {
   push();
+  background(235, 97, 35);
+  textSize(64);
+  fill(24, 24, 26);
+  textAlign(CENTER, CENTER);
+  text(`You won!`, width / 2, height / 2);
+  pop();
+}
+
+function youLost() {
+  push();
+  background(24, 24, 26);
   textSize(64);
   fill(42, 94, 155);
   textAlign(CENTER, CENTER);
-  text(`You won!`, width / 2, height / 2);
+  text(`You lost :(`, width / 2, height / 2);
   pop();
 }
 
@@ -198,9 +219,7 @@ function checkOverlap() {
         candies[i].caught = true;
         score += 1;
 
-        console.log(score);
-
-        // If the score is equal to the number of candies collected, the user wins!
+        // If the score is equal to the number of candies, the user wins!
         if (score === candiesNumber) {
           state = `win`;
         }
