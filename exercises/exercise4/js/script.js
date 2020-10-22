@@ -7,10 +7,11 @@ Here is a description of this template p5 project.
 **************************************************/
 
 // Our candies
-let school = [];
-let schoolSize = 4;
+let candies = [];
+let candiesNumber = 4;
 
 let imgGhost;
+let imgCandy1;
 
 let ghost = {
   x: 70,
@@ -20,10 +21,17 @@ let ghost = {
   speed: 3
 }
 
+let score = 0;
+let state = `simulation`;
+
 // preload()
 //
 function preload() {
   imgGhost = loadImage('assets/images/ghost.png');
+  imgCandy1 = loadImage('assets/images/candy1.png');
+
+  for (let i = 0; i < candiesNumber; i++)
+    candies.push(createCandy(loadImage("assets/images/candy1.png")));
 }
 
 // setup()
@@ -32,28 +40,34 @@ function preload() {
 function setup() {
   createCanvas(800, 800);
 
-  // Create four candy, positioned randomly
-  // Create four candy, positioned randomly, storing each one in four successive
-  // spaces in our array by using the addresses `0` through `3`
-  for (let i = 0; i < schoolSize; i++) {
-    school[i] = createCandy(random(0, width), random(0, height));
-  }
+  setupCandies();
 
   ghost.x = width / 3;
   ghost.y = height / 2;
 }
 
-// createCandy(x,y)
+// Creation of the candies at random positions
+function setupCandies() {
+  for (let i = 0; i < candiesNumber; i++) {
+    candies[i].x = random(0, width);
+    candies[i].y = random(0, height);
+  }
+}
+
+// createCandy(imgParam)
 // Creates a new JavaScript Object describing a candy and returns it
-function createCandy(x, y) {
+function createCandy(imgParam) {
   let candy = {
-    x: x,
-    y: y,
+    x: 0,
+    y: 0,
     size: 50,
     vx: 0,
     vy: 0,
-    speed: 2
+    speed: 2,
+    img: undefined,
+    caught: false
   };
+  candy.img = imgParam;
   return candy;
 }
 
@@ -63,18 +77,40 @@ function draw() {
   background(0);
 
   // Use a for loop to count from 0 up to 3
-  // and move the candy at that index in the schools array each time and display the candy
+  // and move the candy at that index in the candies array each time and display the candy
   for (let i = 0; i < 4; i++) {
-    moveCandy(school[i]);
-    displayCandy(school[i]);
+    moveCandy(candies[i]);
+    displayCandy(candies[i]);
   }
 
-    displayUser();
-    moveUser();
+  if (state === `title`) {
+    title();
+  } else if (state === `simulation`) {
+    simulation();
+  } else if (state === `win`) {
+    youWon();
+  } else if (state === `lost`) {
+    youLost();
+  }
+
+}
+
+function simulation() {
+  displayUser();
+  moveUser();
+  checkOverlap();
+}
+
+function youWon() {
+  push();
+  textSize(64);
+  fill(42, 94, 155);
+  textAlign(CENTER, CENTER);
+  text(`You won!`, width / 2, height / 2);
+  pop();
 }
 
 // moveCandy(candy)
-// Chooses whether the provided candy changes direction and moves it
 function moveCandy(candy) {
   // Choose whether to change direction
   let change = random(0, 1);
@@ -91,18 +127,21 @@ function moveCandy(candy) {
   candy.x = constrain(candy.x, 0, width);
   candy.y = constrain(candy.y, 0, height);
 }
+// Chooses whether the provided candy changes direction and moves it
 
 // displayCandy(candy)
-// Displays the provided candy on the canvas
+// Displays the provided candies on the canvas
 function displayCandy(candy) {
-  push();
-  fill(200, 100, 100);
-  noStroke();
-  ellipse(candy.x, candy.y, candy.size);
-  pop();
+
+  for (let i = 0; i < candiesNumber; i++)
+    if (candies[i].caught === false)
+      image(candies[i].img, candies[i].x, candies[i].y);
 }
 
+// displayUser()
+// Displays the user
 function displayUser() {
+  // Display the ghost image at the proper position
   imageMode(CENTER);
   image(imgGhost, ghost.x, ghost.y);
 
@@ -110,7 +149,6 @@ function displayUser() {
   ghost.x = constrain(ghost.x, 0, width);
   ghost.y = constrain(ghost.y, 0, height);
 }
-
 
 function moveUser() {
 
@@ -120,28 +158,54 @@ function moveUser() {
   // Allows the user to move the ghost using the arrow keys!
 
   if (keyIsDown(LEFT_ARROW)) {
-  // If it is, set the x velocity to be negative
-  ghost.vx = -ghost.speed;
+    // If it is, set the x velocity to be negative
+    ghost.vx = -ghost.speed;
   }
   // Otherwise is the right arrow pressed?
   else if (keyIsDown(RIGHT_ARROW)) {
-  // If it is, set the x velocity to be positive
-  ghost.vx = ghost.speed;
+    // If it is, set the x velocity to be positive
+    ghost.vx = ghost.speed;
   }
   // If neither of those keys are pressed
   else {
-  // Then set the x velocity to 0 to stop moving horizontally
-  ghost.vx = 0;
+    // Then set the x velocity to 0 to stop moving horizontally
+    ghost.vx = 0;
   }
 
   // Do the same thing with vertical movement and the UP and DOWN keys
   if (keyIsDown(UP_ARROW)) {
-  ghost.vy = -ghost.speed;
+    ghost.vy = -ghost.speed;
+  } else if (keyIsDown(DOWN_ARROW)) {
+    ghost.vy = ghost.speed;
+  } else {
+    ghost.vy = 0;
   }
-  else if (keyIsDown(DOWN_ARROW)) {
-  ghost.vy = ghost.speed;
+}
+
+// Check if the ghost catches candies
+function checkOverlap() {
+
+  for (let i = 0; i < candiesNumber; i++) {
+    if (candies[i].caught === false) {
+      if (
+        ghost.x < candies[i].x + candies[i].img.width &&
+        ghost.x + imgGhost.width > candies[i].x &&
+        ghost.y < candies[i].y + candies[i].img.height &&
+        ghost.y + imgGhost.height > candies[i].y
+      ) {
+        // Collision detected:
+        // The candy disappears and the score is incremented by 1.
+        candies[i].caught = true;
+        score += 1;
+
+        console.log(score);
+
+        // If the score is equal to the number of candies collected, the user wins!
+        if (score === candiesNumber) {
+          state = `win`;
+        }
+      }
+    }
   }
-  else {
-  ghost.vy = 0;
-  }
+
 }
