@@ -8,7 +8,7 @@ Catch the candies!
 
 // Candies
 let candies = [];
-let candiesNumber = 4;
+let candiesNumber = 10;
 
 // Images
 let imgGhost;
@@ -19,22 +19,23 @@ let ghost = {
   y: 70,
   vx: 1,
   vy: 1,
-  speed: 4
-}
+  speed: 4,
+};
 
+const timeAllowed = 500; // frameCount
 let score = 0;
-let state = `simulation`;
 
-const timeAllowed = 500;
+let state = `simulation`;
 
 // preload()
 //
 function preload() {
-  imgGhost = loadImage('assets/images/ghost.png');
-  imgCandy1 = loadImage('assets/images/candy1.png');
+  imgGhost = loadImage("assets/images/ghost.png");
+  imgCandy1 = loadImage("assets/images/candy1.png");
 
+  // Random candies
   for (let i = 0; i < candiesNumber; i++)
-    candies.push(createCandy(loadImage("assets/images/candy1.png")));
+    candies.push(createCandy(loadImage(`assets/images/candy${Math.floor((Math.random() * 8) + 1)}.png`)));
 }
 
 // setup()
@@ -44,9 +45,7 @@ function setup() {
   createCanvas(800, 800);
 
   setupCandies();
-
-  ghost.x = width / 3;
-  ghost.y = height / 2;
+  setupUser();
 }
 
 // Creation of the candies at random positions
@@ -54,7 +53,14 @@ function setupCandies() {
   for (let i = 0; i < candiesNumber; i++) {
     candies[i].x = random(0, width);
     candies[i].y = random(0, height);
+    setCandySpeed(candies[i]);
   }
+}
+
+// Creation of the user at the center of the canvas
+function setupUser() {
+  ghost.x = width / 2 - imgGhost.width / 2;
+  ghost.y = height / 2 - imgGhost.height / 2;
 }
 
 // createCandy(imgParam)
@@ -68,7 +74,7 @@ function createCandy(imgParam) {
     vy: 0,
     speed: 2,
     img: undefined,
-    caught: false
+    caught: false,
   };
   candy.img = imgParam;
   return candy;
@@ -79,25 +85,16 @@ function createCandy(imgParam) {
 function draw() {
   background(94, 50, 186);
 
-  // Use a for loop to count from 0 up to 3
-  // and move the candy at that index in the candies array each time and display the candy
-  for (let i = 0; i < 4; i++) {
-    moveCandy(candies[i]);
-    displayCandy(candies[i]);
-  }
-
-  if (state === `title`) {
-    title();
-  } else if (state === `simulation`) {
+  if (state === `simulation`) {
     simulation();
   } else if (state === `win`) {
     youWon();
   } else if (state === `lost`) {
     youLost();
   }
-
 }
 
+// When the number of frames exceeds a certain amount, the user looses.
 function timer() {
   if (frameCount > timeAllowed) {
     state = `lost`;
@@ -105,6 +102,12 @@ function timer() {
 }
 
 function simulation() {
+  // Use a for loop to count from 0 to the number of candies
+  // and move the candy at that index in the candies array each time and display the candy
+  for (let i = 0; i < candiesNumber; i++) {
+    moveCandy(candies[i]);
+    displayCandy(candies[i]);
+  }
   displayUser();
   moveUser();
   checkOverlap();
@@ -118,6 +121,10 @@ function youWon() {
   fill(24, 24, 26);
   textAlign(CENTER, CENTER);
   text(`You won!`, width / 2, height / 2);
+
+  for (let i = 0; i < candiesNumber; i++) {
+    displayCandy(candies[i]);
+  }
   pop();
 }
 
@@ -125,20 +132,27 @@ function youLost() {
   push();
   background(24, 24, 26);
   textSize(64);
-  fill(42, 94, 155);
+  fill(235, 97, 35);
   textAlign(CENTER, CENTER);
   text(`You lost :(`, width / 2, height / 2);
   pop();
 }
 
+function setCandySpeed(candy) {
+  // Chooses whether the provided candy changes direction and moves it
+  let directionX = random(-1, 1);
+  let speedX = random(1, candy.speed);
+  candy.vx = directionX > 0 ? speedX : -speedX;
+  let directionY = random(-1, 1);
+  let speedY = random(1, candy.speed);
+  candy.vy = directionY > 0 ? speedY : -speedY;
+}
+
 // moveCandy(candy)
 function moveCandy(candy) {
   // Choose whether to change direction
-  let change = random(0, 1);
-  if (change < 0.05) {
-    candy.vx = random(-candy.speed, candy.speed);
-    candy.vy = random(-candy.speed, candy.speed);
-  }
+  if (random(0, 100) > 95)
+    setCandySpeed(candy);
 
   // Move the candy
   candy.x = candy.x + candy.vx;
@@ -148,12 +162,11 @@ function moveCandy(candy) {
   candy.x = constrain(candy.x, 0, width);
   candy.y = constrain(candy.y, 0, height);
 }
-// Chooses whether the provided candy changes direction and moves it
+
 
 // displayCandy(candy)
 // Displays the provided candies on the canvas
 function displayCandy(candy) {
-
   for (let i = 0; i < candiesNumber; i++)
     if (candies[i].caught === false)
       image(candies[i].img, candies[i].x, candies[i].y);
@@ -172,7 +185,6 @@ function displayUser() {
 }
 
 function moveUser() {
-
   ghost.x = ghost.x + ghost.vx;
   ghost.y = ghost.y + ghost.vy;
 
@@ -205,7 +217,6 @@ function moveUser() {
 
 // Check if the ghost catches candies
 function checkOverlap() {
-
   for (let i = 0; i < candiesNumber; i++) {
     if (candies[i].caught === false) {
       if (
@@ -219,12 +230,20 @@ function checkOverlap() {
         candies[i].caught = true;
         score += 1;
 
+        // The ghost goes faster!
+        ghost.speed += 1;
+
+        // The candies go faster!
+        candies[i].speed = candies[i].speed + 1;
+
         // If the score is equal to the number of candies, the user wins!
         if (score === candiesNumber) {
           state = `win`;
+          for (let i = 0; i < candiesNumber; i++) {
+            candies[i].caught = false;
+          }
         }
       }
     }
   }
-
 }
