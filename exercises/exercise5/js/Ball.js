@@ -49,7 +49,7 @@ class Ball {
 
   display() {
     push();
-    fill(255, 50, 50);
+    fill(255, 133, 82);
     stroke(0);
     ellipse(this.x, this.y, this.size);
     pop();

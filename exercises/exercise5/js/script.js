@@ -21,10 +21,7 @@ function setup() {
   paddle = new Paddle(300, 20);
 
   for (let i = 0; i < numBalls; i++) {
-    let x = random(0, width);
-    let y = random(-400, -100);
-    let ball = new Ball(x, y);
-    balls.push(ball);
+    setupBalls();
   }
 }
 
@@ -32,7 +29,7 @@ function setup() {
 //
 // Description of draw() goes here.
 function draw() {
-  background(0);
+  background(57, 57, 58);
 
   paddle.move();
   paddle.display();
@@ -47,4 +44,16 @@ function draw() {
       ball.display();
     }
   }
+}
+
+function setupBalls() {
+  let x = random(0, width);
+  let y = random(-400, -100);
+  let ball = new Ball(x, y);
+  balls.push(ball);
+}
+
+// When clicking, a new ball is added.
+function mousePressed() {
+  setupBalls();
 }
