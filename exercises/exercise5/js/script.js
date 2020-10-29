@@ -2,7 +2,9 @@
 Exercise 5
 Valentine Sénégas
 
-Here is a description of this template p5 project.
+The user looses if the paddle touches a bomb.
+The user wins if the paddle never touches a bomb in the time allowed.
+The user can add one new ball and one new bomb by pressing the mouse.
 **************************************************/
 
 let gravityForce = 0.0025;
@@ -64,11 +66,19 @@ function draw() {
 //--------- States --------//
 function simulation() {
 
+  push();
+  textSize(34);
+  fill(41, 115, 115);
+  textAlign(CENTER, CENTER);
+  text(`Click with your mouse to add more balls!`, width / 2, height / 2);
+  pop();
+
   // Paddle
   paddle.move();
   paddle.display();
 
   // Balls
+  let isActive = false;
   for (let i = 0; i < balls.length; i++) {
     let ball = balls[i];
 
@@ -77,8 +87,11 @@ function simulation() {
       ball.move();
       ball.bounce(paddle);
       ball.display();
+      isActive = true;
     }
   }
+  if (isActive === false)
+    state = `lost`;
 
   // Bombs
   for (let i = 0; i < bombs.length; i++) {
@@ -102,7 +115,7 @@ function youLost() {
 
   push();
   textSize(64);
-  fill(65, 146, 240);
+  fill(230, 230, 230);
   textAlign(CENTER, CENTER);
   text(`You lost!`, width / 2, height / 2);
   pop();
@@ -113,7 +126,7 @@ function youWon() {
 
   push();
   textSize(64);
-  fill(65, 146, 240);
+  fill(233, 215, 118);
   textAlign(CENTER, CENTER);
   text(`You won!`, width / 2, height / 2);
   pop();
