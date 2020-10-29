@@ -12,6 +12,15 @@ let paddle;
 let balls = [];
 let numBalls = 10;
 
+let bombs = [];
+let numBombs = 3;
+let imgBomb;
+
+
+function preload() {
+  imgBomb = loadImage("assets/images/bomb.png");
+}
+
 // setup()
 //
 // Description of setup() goes here.
@@ -21,7 +30,11 @@ function setup() {
   paddle = new Paddle(300, 20);
 
   for (let i = 0; i < numBalls; i++) {
-    setupBalls();
+    createBalls();
+  }
+
+  for (let i = 0; i < numBombs; i++) {
+    createBombs();
   }
 }
 
@@ -44,16 +57,34 @@ function draw() {
       ball.display();
     }
   }
+
+  for (let i = 0; i < bombs.length; i++) {
+    let bomb = bombs[i];
+
+    if (bomb.active) {
+      bomb.gravity(gravityForce);
+      bomb.move();
+      bomb.explode(paddle);
+      bomb.display();
+    }
+  }
 }
 
-function setupBalls() {
+function createBalls() {
   let x = random(0, width);
   let y = random(-400, -100);
   let ball = new Ball(x, y);
   balls.push(ball);
 }
 
+function createBombs() {
+  let x = random(0, width);
+  let y = random(-400, -100);
+  let bomb = new Bomb(x, y);
+  bombs.push(bomb);
+}
+
 // When clicking, a new ball is added.
 function mousePressed() {
-  setupBalls();
+  createBalls();
 }
