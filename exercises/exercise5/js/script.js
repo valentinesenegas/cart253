@@ -16,6 +16,8 @@ let bombs = [];
 let numBombs = 3;
 let imgBomb;
 
+const timeAllowed = 1000; // frameCount
+
 let state = `simulation`;
 
 // preload()
@@ -53,19 +55,20 @@ function draw() {
   } else if (state === `simulation`) {
     simulation();
   } else if (state === `win`) {
-    democracySaved();
+    youWon();
   } else if (state === `lost`) {
     youLost();
   }
-
 }
 
 //--------- States --------//
 function simulation() {
 
+  // Paddle
   paddle.move();
   paddle.display();
 
+  // Balls
   for (let i = 0; i < balls.length; i++) {
     let ball = balls[i];
 
@@ -77,6 +80,7 @@ function simulation() {
     }
   }
 
+  // Bombs
   for (let i = 0; i < bombs.length; i++) {
     let bomb = bombs[i];
 
@@ -85,24 +89,43 @@ function simulation() {
       bomb.move();
       bomb.explode(paddle);
       bomb.display();
-    }
-    else {
-      state = `lost`;
+      if (bomb.exploded)
+        state = `lost`;
     }
   }
+
+  timer();
 }
 
 function youLost() {
-    balls = 0;
+  balls = 0;
 
-    push();
-    textSize(64);
-    fill(65, 146, 240);
-    textAlign(CENTER, CENTER);
-    text(`You lost!`, width / 2, height / 2);
-    pop();
+  push();
+  textSize(64);
+  fill(65, 146, 240);
+  textAlign(CENTER, CENTER);
+  text(`You lost!`, width / 2, height / 2);
+  pop();
 }
 
+function youWon() {
+  balls = 0;
+
+  push();
+  textSize(64);
+  fill(65, 146, 240);
+  textAlign(CENTER, CENTER);
+  text(`You won!`, width / 2, height / 2);
+  pop();
+}
+
+//--------- Timer --------//
+// When the number of frames exceeds a certain amount, the user wins.
+function timer() {
+  if (frameCount > timeAllowed) {
+    state = `win`;
+  }
+}
 
 //--------- Creation --------//
 function createBalls() {
@@ -121,7 +144,11 @@ function createBombs() {
 
 
 //--------- User input --------//
-// When clicking, a new ball is added.
+// When clicking, a new ball and a new bomb are added.
 function mousePressed() {
-  createBalls();
+
+  if (state === `simulation`) {
+    createBalls();
+    createBombs();
+  }
 }

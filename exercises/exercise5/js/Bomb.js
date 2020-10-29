@@ -12,6 +12,7 @@ class Bomb {
     this.maxSpeed = 10;
     this.size = 40;
     this.active = true;
+    this.exploded = false;
   }
 
   gravity(force) {
@@ -28,23 +29,27 @@ class Bomb {
     this.x = this.x + this.vx;
     this.y = this.y + this.vy;
 
-    if (this.y - this.size/2 > height) {
+    if (this.y - this.size / 2 > height) {
       this.active = false;
     }
   }
 
+  // Checks if the bomb touches the paddle
   explode(paddle) {
     if (this.x > paddle.x - paddle.width / 2 &&
       this.x < paddle.x + paddle.width / 2 &&
-      this.y + this.size/2 > paddle.y - paddle.height/2 &&
-      this.y - this.size/2 < paddle.y + paddle.height/2) {
+      this.y + this.size / 2 > paddle.y - paddle.height / 2 &&
+      this.y - this.size / 2 < paddle.y + paddle.height / 2) {
 
-        this.active = false;
+      // If it does, the bomb explodes
+      this.exploded = true;
     }
   }
 
+  // Display the bomb image
   display() {
     push();
+    imageMode(CENTER);
     image(imgBomb, this.x, this.y);
     pop();
   }
