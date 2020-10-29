@@ -39,31 +39,13 @@ class Bomb {
       this.y + this.size/2 > paddle.y - paddle.height/2 &&
       this.y - this.size/2 < paddle.y + paddle.height/2) {
 
-// state lost
-
-      // push();
-      // textSize(65);
-      // fill(65, 146, 240);
-      // textAlign(CENTER, CENTER);
-      // text(`You lost!`, width / 2, height / 2);
-      // pop();
-
-      // let dx = this.x - paddle.x;
-      // this.vx = this.vx + map(dx, -paddle.width/2, paddle.width/2, -2, 2);
-      //
-      // this.vy = -this.vy;
-      // this.ay = 0;
+        this.active = false;
     }
-
   }
 
   display() {
     push();
     image(imgBomb, this.x, this.y);
-    fill(255, 133, 82);
-    stroke(0);
-    ellipse(this.x, this.y, this.size);
     pop();
   }
-
 }

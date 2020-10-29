@@ -16,33 +16,52 @@ let bombs = [];
 let numBombs = 3;
 let imgBomb;
 
+let state = `simulation`;
 
+// preload()
+// Preloading the images
 function preload() {
   imgBomb = loadImage("assets/images/bomb.png");
 }
 
 // setup()
-//
 // Description of setup() goes here.
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
   paddle = new Paddle(300, 20);
 
+  // Create balls based on the number of balls that we want
   for (let i = 0; i < numBalls; i++) {
     createBalls();
   }
 
+  // Create bombs based on the number of bombs that we want
   for (let i = 0; i < numBombs; i++) {
     createBombs();
   }
 }
 
 // draw()
-//
 // Description of draw() goes here.
 function draw() {
   background(57, 57, 58);
+
+  // States management
+  if (state === `title`) {
+    title();
+  } else if (state === `simulation`) {
+    simulation();
+  } else if (state === `win`) {
+    democracySaved();
+  } else if (state === `lost`) {
+    youLost();
+  }
+
+}
+
+//--------- States --------//
+function simulation() {
 
   paddle.move();
   paddle.display();
@@ -67,9 +86,25 @@ function draw() {
       bomb.explode(paddle);
       bomb.display();
     }
+    else {
+      state = `lost`;
+    }
   }
 }
 
+function youLost() {
+    balls = 0;
+
+    push();
+    textSize(64);
+    fill(65, 146, 240);
+    textAlign(CENTER, CENTER);
+    text(`You lost!`, width / 2, height / 2);
+    pop();
+}
+
+
+//--------- Creation --------//
 function createBalls() {
   let x = random(0, width);
   let y = random(-400, -100);
@@ -84,6 +119,8 @@ function createBombs() {
   bombs.push(bomb);
 }
 
+
+//--------- User input --------//
 // When clicking, a new ball is added.
 function mousePressed() {
   createBalls();
