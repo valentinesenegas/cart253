@@ -16,87 +16,30 @@ let keyJ = 74;
 let keyK = 75;
 let keyL = 76;
 
-let imgBodyPresident;
-
-// ---------- //
-
-// punchLeft
-let clenchedFistFrontLeft;
-let clenchedFistBackLeft;
-
-// clapLeft
-let openHandFrontLeft;
-let openHandBackLeft;
-
-// pointLeft
-let pointLeft1;
-
-// Accordion
-let accordion;
-
-// punchRight
-let clenchedFistFront1;
-let clenchedFistBack1;
-
-// clapRight
-let openHandFront1;
-let openHandBack1;
-
-// pointRight
-let pointRight1;
-
-// Split
-let imgSplit;
-
 // ---------- //
 let bg;
 
-let president = {
-  x: undefined,
-  y: undefined,
-  frontHandX: undefined,
-  frontHandY: undefined,
-  backHandX: undefined,
-  backHandY: undefined
-}
+let president;
 
-let danceState = `none`;
+let currentDanceMove = null;
+
+let splitDanceMove;
+let accordionDanceMove;
+let pointLeftDanceMove;
+let pointRightDanceMove;
+let punchLeftDanceMove;
+let punchRightDanceMove;
+let clapLeftDanceMove;
+let clapRightDanceMove;
 
 // ---------- //
 // Preload the images and sounds
 function preload() {
-  imgBodyPresident = loadImage("assets/images/body2.png");
-
-  // punchLeft
-  clenchedFistFrontLeft = loadImage("assets/images/clenchedFistFrontLeft.png");
-  clenchedFistBackLeft = loadImage("assets/images/clenchedFistBackLeft.png");
-
-  // clapLeft
-  openHandFrontLeft = loadImage("assets/images/openHandFrontLeft.png");
-  openHandBackLeft = loadImage("assets/images/openHandBackLeft.png");
-
-  // pointLeft
-  pointLeft1 = loadImage("assets/images/pointLeft.png");
-
-  // Accordion
-  imgAccordion = loadImage("assets/images/accordion.png");
-
-  // punchRight
-  clenchedFistFront1 = loadImage("assets/images/clenchedFistFront1.png");
-  clenchedFistBack1 = loadImage("assets/images/clenchedFistBack1.png");
-
-  // clapRight
-  openHandFront1 = loadImage("assets/images/openHandFront1.png");
-  openHandBack1 = loadImage("assets/images/openHandBack1.png");
-
-  // pointRight
-  pointRight1 = loadImage("assets/images/pointRight1.png");
-
-  // Split
-  imgSplit = loadImage("assets/images/split.png");
-
   //bg
   bg = loadImage("assets/images/bg.png");
+
+  preloadPresident();
+  preloadMoves();
 }
 
 // setup()
@@ -104,211 +47,50 @@ function preload() {
 // Description of setup() goes here.
 function setup() {
   createCanvas(1267, 900);
-  setupPresident();
-}
-
-// Set President's position on the canvas
-function setupPresident() {
-  president.x = width / 2;
-  president.y = height / 2;
-
-  // Offset for animations on the left side
-  president.frontHandLeftDX = -60;
-  president.frontHandLeftDY = 0;
-  president.backHandLeftDX = -200;
-  president.backHandLeftDY = 0;
-
-  // Offset for animations on the right side
-  president.frontHandRightDX = -110;
-  president.frontHandRightDY = -30;
-  president.backHandRightDX = -10;
-  president.backHandRightDY = 0;
+  president = new President();
+  splitDanceMove = new SplitDanceMove(president);
+  accordionDanceMove = new AccordionDanceMove(president);
+  pointLeftDanceMove = new PointLeftDanceMove(president);
+  pointRightDanceMove = new PointRightDanceMove(president);
+  punchLeftDanceMove = new PunchLeftDanceMove(president);
+  punchRightDanceMove = new PunchRightDanceMove(president);
+  clapLeftDanceMove = new ClapLeftDanceMove(president);
+  clapRightDanceMove = new ClapRightDanceMove(president);
 }
 
 // draw()
 //
 // Description of draw() goes here.
 function draw() {
-  background(241, 243, 252);
   image(bg, 0, 0);
-
-  // displayPresident();
-
   handleInput();
-
-  // States management
-
-  // Left side
-  if (danceState === `punchLeft`) {
-    punchLeft();
-  } else if (danceState === `clapLeft`) {
-    clapLeft();
-  } else if (danceState === `pointLeft`) {
-    pointLeft();
-  } else if (danceState === `accordion`) {
-    playAccordion();
-  }
-
-  // Right side
-  if (danceState === `punchRight`) {
-    punchRight();
-  } else if (danceState === `clapRight`) {
-    clapRight();
-  } else if (danceState === `pointRight`) {
-    pointRight();
-  } else if (danceState === `split`) {
-    doTheSplit();
-  }
-
+  if (currentDanceMove != null)
+    currentDanceMove.draw();
 }
 
-// ---------------------------//
-// STATES
-
-// Left side
-function punchLeft() {
-  push();
-
-  imageMode(CORNER);
-  image(clenchedFistBackLeft, president.x + president.backHandLeftDX, president.y + president.backHandLeftDY);
-
-  imageMode(CENTER);
-  image(imgBodyPresident, president.x, president.y);
-
-  imageMode(CORNER);
-  image(clenchedFistFrontLeft, president.x + president.frontHandLeftDX, president.y + president.frontHandLeftDY);
-
-  pop();
-
-}
-
-function clapLeft() {
-  push();
-
-  imageMode(CORNER);
-  image(openHandBackLeft, president.x + president.backHandLeftDX, president.y + president.backHandLeftDY);
-
-  imageMode(CENTER);
-  image(imgBodyPresident, president.x, president.y);
-
-  imageMode(CORNER);
-  image(openHandFrontLeft, president.x + president.frontHandLeftDX, president.y + president.frontHandLeftDY);
-
-  pop();
-}
-
-function pointLeft() {
-  push();
-
-  imageMode(CORNER);
-  image(openHandBackLeft, president.x + president.backHandLeftDX, president.y + president.backHandLeftDY);
-
-  imageMode(CENTER);
-  image(imgBodyPresident, president.x, president.y);
-
-  imageMode(CORNER);
-  image(pointLeft1, president.x - 230, president.y - 100);
-  pop();
-}
-
-function playAccordion() {
-  push();
-
-  imageMode(CENTER);
-  image(imgBodyPresident, president.x, president.y);
-
-  imageMode(CENTER);
-  image(imgAccordion, president.x, president.y + 50);
-  pop();
-}
-
-// Right side
-function punchRight() {
-  push();
-
-  imageMode(CORNER);
-  image(clenchedFistBack1, president.x + president.backHandRightDX, president.y + president.backHandRightDY);
-
-  imageMode(CENTER);
-  image(imgBodyPresident, president.x, president.y);
-
-  imageMode(CORNER);
-  image(clenchedFistFront1, president.x + president.frontHandRightDX, president.y + president.frontHandRightDY);
-
-  pop();
-
-}
-
-function clapRight() {
-  push();
-
-  imageMode(CORNER);
-  image(openHandBack1, president.x + president.backHandRightDX, president.y + president.backHandRightDY);
-
-  imageMode(CENTER);
-  image(imgBodyPresident, president.x, president.y);
-
-  imageMode(CORNER);
-  image(openHandFront1, president.x + president.frontHandRightDX, president.y + president.frontHandRightDY);
-
-  pop();
-}
-
-function pointRight() {
-  push();
-
-  imageMode(CORNER);
-  image(openHandBack1, president.x + president.backHandRightDX, president.y + president.backHandRightDY);
-
-  imageMode(CENTER);
-  image(imgBodyPresident, president.x, president.y);
-
-  imageMode(CORNER);
-  image(pointRight1, president.x + president.frontHandRightDX, president.y + president.frontHandRightDY);
-  pop();
-}
-
-function doTheSplit() {
-  push();
-
-  imageMode(CENTER);
-  image(imgSplit, president.x, president.y + 60);
-
-  pop();
-}
-
-// Displays only the body of president
-function displayPresident() {
-  push();
-  imageMode(CENTER);
-  image(imgBodyPresident, president.x, president.y);
-  pop();
-}
-
-// ---------------------------//
 // USER INPUT with arrow keys
 function handleInput() {
 
   // Left side
   if (keyIsDown(keyA)) {
-    danceState = `punchLeft`;
+    currentDanceMove = punchLeftDanceMove;
   } else if (keyIsDown(keyS)) {
-    danceState = `clapLeft`;
+    currentDanceMove = clapLeftDanceMove;
   } else if (keyIsDown(keyD)) {
-    danceState = `pointLeft`;
+    currentDanceMove = pointLeftDanceMove;
   } else if (keyIsDown(keyF)) {
-    danceState = `accordion`;
+    currentDanceMove = accordionDanceMove;
   }
 
   // Right side
   if (keyIsDown(keyL)) {
-    danceState = `punchRight`;
+    currentDanceMove = punchRightDanceMove;
   } else if (keyIsDown(keyK)) {
-    danceState = `clapRight`;
+    currentDanceMove = clapRightDanceMove;
   } else if (keyIsDown(keyJ)) {
-    danceState = `pointRight`;
+    currentDanceMove = pointRightDanceMove;
   } else if (keyIsDown(keyH)) {
-    danceState = `split`;
+    currentDanceMove = splitDanceMove;
   }
 
 } // End handleInput()
