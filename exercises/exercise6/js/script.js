@@ -27,13 +27,6 @@ let keyS = 83;
 let keyD = 68;
 let keyF = 70;
 
-let drumHit;
-
-
-function preload() {
-  drumHit = loadSound(`assets/sounds/drum-hit-3.wav`);
-}
-
 // setup()
 //
 // Just creates the canvas
@@ -47,7 +40,7 @@ function setup() {
 // Description of draw() goes here.
 function draw() {
   background(242, 255, 246);
-
+  instructions();
   // Normal balls
   for (let i = 0; i < balls.length; i++) {
     let ball = balls[i];
@@ -71,6 +64,19 @@ function draw() {
     specialball.bounce();
     specialball.display();
   }
+
+
+}
+
+function instructions() {
+  push();
+  textSize(34);
+  textAlign(LEFT, CENTER);
+  fill(100);
+  text(`Click to create normal balls.`, 50, height / 2);
+  text(`Press A to create mini balls.`, 50, height / 2 + 34);
+  text(`Press D to create special balls.`, 50, height / 2 + 68);
+  pop();
 }
 
 // Create normal balls when the mouse is pressed
@@ -82,10 +88,9 @@ function mousePressed() {
 function keyPressed() {
 
   if (keyIsDown(keyA)) {
-      createMiniBall(random(0, width), random(0, height));
-  }
-  else if (keyIsDown(keyD)) {
-      createSpecialBall (random(0, width), random(0, height));
+    createMiniBall(random(0, width), random(0, height));
+  } else if (keyIsDown(keyD)) {
+    createSpecialBall(random(0, width), random(0, height));
   }
 }
 

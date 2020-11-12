@@ -2,7 +2,7 @@ class MiniBall extends Ball {
 
   constructor(x, y, note) {
     super(x, y, note);
-    this.size = 20;
+    this.size = 10;
     this.fill = {
       r: random(0, 255),
       g: random(0, 255),
