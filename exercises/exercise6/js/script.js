@@ -1,18 +1,18 @@
+"use strict";
+
 /**************************************************
 Exercise 6
 Valentine Sénégas
 
-A program that plays music based on primitive physics
+A program that plays music based on primitive physics.
+Press A S D or F to create different balls.
+Talk in the mic to change the size of S balls.
+Click on a ball to destroy it.
 **************************************************/
 
+// --- Variables --- //
 // The balls
 let balls = [];
-
-let miniballs = [];
-
-let specialballs = [];
-
-let micballs = [];
 
 // F-minor
 let notesFMinor = [`F3`, `G3`, `Ab4`, `Bb4`, `C4`, `Db4`, `Eb4`, `F4`];
@@ -29,73 +29,64 @@ let keyS = 83;
 let keyD = 68;
 let keyF = 70;
 
-// setup()
-//
-// Just creates the canvas
+// -------------- //
+
+// Creates the canvas and setup of the microphone
 function setup() {
   createCanvas(600, 600);
   userStartAudio();
   setupMic();
 }
 
-// draw()
-//
-// Description of draw() goes here.
+// Draws balls and removes them
 function draw() {
   background(242, 255, 246);
   instructions();
 
-  // Normal balls
+  // Remove balls that self destructed.
+  // Loop on the array starting from the end to avoid out of bound errors.
+  for (let i = 0; i < balls.length; i++) {
+    let ball = balls[i];
+    if (ball.timeToLive === 0) {
+      ball.destroy();
+      balls.splice(i, 1);
+    }
+  }
+
+  // Draw balls
   for (let i = 0; i < balls.length; i++) {
     let ball = balls[i];
     ball.move();
     ball.bounce();
     ball.display();
   }
-
-  // Mini balls
-  for (let i = 0; i < miniballs.length; i++) {
-    let miniball = miniballs[i];
-    miniball.move();
-    miniball.bounce();
-    miniball.display();
-  }
-
-  // Special balls
-  for (let i = 0; i < specialballs.length; i++) {
-    let specialball = specialballs[i];
-    specialball.move();
-    specialball.bounce();
-    specialball.display();
-  }
-
-  // Mic balls
-  for (let i = 0; i < micballs.length; i++) {
-    let micball = micballs[i];
-    micball.move();
-    micball.bounce();
-    micball.display();
-  }
-
 }
 
+// Displays instructions on the screen
 function instructions() {
   push();
-  textSize(34);
+  textSize(24);
   textAlign(LEFT, CENTER);
   fill(100);
-  text(`Click to create normal balls.`, 50, height / 2);
-  text(`Press A to create mini balls.`, 50, height / 2 + 34);
-  text(`Press D to create special balls.`, 50, height / 2 + 68);
+  text(`Press A S D or F to create different balls.`, 50, height / 2);
+  text(`Talk in the mic to change the size of S balls.`, 50, height / 2 + 34);
+  text(`Click on a ball to destroy it.`, 50, height / 2 + 68);
   pop();
 }
 
-// Create normal balls when the mouse is pressed
+// Destroys the ball when the user clicks on it
 function mousePressed() {
-  createBall(mouseX, mouseY);
+  // Is there a ball beneath the mouse?
+  let ballsLength = balls.length;
+  for (let i = 0; i < balls.length; i++) {
+    let ball = balls[i];
+    let dist = Math.sqrt(Math.pow(ball.x - mouseX, 2) + Math.pow(ball.y - mouseY, 2));
+    if (dist <= ball.size)
+      ball.startSelfDestruct();
+  }
 }
 
-// Create mini balls when any key is pressed
+// Create balls when ASDF keys are pressed
 function keyPressed() {
 
   if (keyIsDown(keyA)) {
@@ -104,9 +95,12 @@ function keyPressed() {
     createSpecialBall(random(0, width), random(0, height));
   } else if (keyIsDown(keyS)) {
     createMicBall(random(0, width), random(0, height));
+  } else if (keyIsDown(keyF)) {
+    createBall(random(0, width), random(0, height));
   }
 }
 
+// -------------- //
 // Create balls
 function createBall(x, y) {
   let note = random(notesFMinor);
@@ -117,18 +111,17 @@ function createBall(x, y) {
 function createMiniBall(x, y) {
   let note = random(notesEFlat);
   let miniball = new MiniBall(x, y, note);
-  miniballs.push(miniball);
+  balls.push(miniball);
 }
-
 
 function createSpecialBall(x, y) {
   let note = random(notesBFlat);
   let specialball = new SpecialBall(x, y, note);
-  specialballs.push(specialball);
+  balls.push(specialball);
 }
 
 function createMicBall(x, y) {
   let note = random(notesBFlat);
   let micball = new MicBall(x, y, note);
-  micballs.push(micball);
+  balls.push(micball);
 }

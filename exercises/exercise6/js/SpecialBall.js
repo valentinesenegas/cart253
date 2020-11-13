@@ -29,15 +29,6 @@ class SpecialBall extends Ball {
     this.changeColor();
     this.increaseSize();
     this.increaseSpeed();
-
-    // if (drumHit.isPlaying()) {
-    //   drumHit.stop();
-    // background(255, 0, 0);
-    // } else {
-    //     drumHit.play();
-    //    drumHit.stop();
-    //    background(0, 255, 0);
-    // }
   }
 
   changeColor() {
@@ -46,8 +37,6 @@ class SpecialBall extends Ball {
       g: random(0, 255),
       b: random(0, 255)
     };
-
-    // background(random(240, 255), random(230, 255), random(225, 255));
   }
 
   increaseSize() {
@@ -55,21 +44,11 @@ class SpecialBall extends Ball {
       this.incSize = -1;
     else if (this.size < this.incSizeMin)
       this.incSize = 1;
-  this.size += this.incSize;
+    this.size += this.incSize;
   }
 
   increaseSpeed() {
     this.vx = this.vxMax * (this.vx > 0 ? (this.size / this.incSizeMax) : -(this.size / this.incSizeMax));
     this.vy = this.vyMax * (this.vy > 0 ? (this.size / this.incSizeMax) : -(this.size / this.incSizeMax));
-
-    // this.vx = this.vx * (this.size 1.2;
-    // this.vy = this.vy * 1.2;
-    //
-    // if (Math.abs(this.vx) >= this.vxMax)
-    //   this.vx = (this.vx > 0 ? this.vxMax : -this.vxMax);
-    // if (Math.abs(this.vy) >= this.vyMax)
-    //   this.vy = (this.vy > 0 ? this.vyMax : -this.vyMax);
   }
-
-
 }
