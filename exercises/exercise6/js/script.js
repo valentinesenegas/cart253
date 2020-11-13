@@ -5,8 +5,8 @@ Exercise 6
 Valentine Sénégas
 
 A program that plays music based on primitive physics.
-Press A S D or F to create different balls.
-Talk in the mic to change the size of S balls.
+Press A S D or F to create different types of balls.
+Talk in the mic to change  properties of the S balls.
 Click on a ball to destroy it.
 **************************************************/
 
@@ -65,11 +65,11 @@ function draw() {
 // Displays instructions on the screen
 function instructions() {
   push();
-  textSize(24);
+  textSize(22);
   textAlign(LEFT, CENTER);
   fill(100);
-  text(`Press A S D or F to create different balls.`, 50, height / 2);
-  text(`Talk in the mic to change the size of S balls.`, 50, height / 2 + 34);
+  text(`Press A S D or F to create different types of balls.`, 50, height / 2);
+  text(`Talk in the mic to change properties of the S balls.`, 50, height / 2 + 34);
   text(`Click on a ball to destroy it.`, 50, height / 2 + 68);
   pop();
 }
