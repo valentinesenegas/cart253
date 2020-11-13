@@ -12,6 +12,8 @@ let miniballs = [];
 
 let specialballs = [];
 
+let micballs = [];
+
 // F-minor
 let notesFMinor = [`F3`, `G3`, `Ab4`, `Bb4`, `C4`, `Db4`, `Eb4`, `F4`];
 
@@ -33,6 +35,7 @@ let keyF = 70;
 function setup() {
   createCanvas(600, 600);
   userStartAudio();
+  setupMic();
 }
 
 // draw()
@@ -41,6 +44,7 @@ function setup() {
 function draw() {
   background(242, 255, 246);
   instructions();
+
   // Normal balls
   for (let i = 0; i < balls.length; i++) {
     let ball = balls[i];
@@ -65,6 +69,13 @@ function draw() {
     specialball.display();
   }
 
+  // Mic balls
+  for (let i = 0; i < micballs.length; i++) {
+    let micball = micballs[i];
+    micball.move();
+    micball.bounce();
+    micball.display();
+  }
 
 }
 
@@ -91,9 +102,12 @@ function keyPressed() {
     createMiniBall(random(0, width), random(0, height));
   } else if (keyIsDown(keyD)) {
     createSpecialBall(random(0, width), random(0, height));
+  } else if (keyIsDown(keyS)) {
+    createMicBall(random(0, width), random(0, height));
   }
 }
 
+// Create balls
 function createBall(x, y) {
   let note = random(notesFMinor);
   let ball = new Ball(x, y, note);
@@ -111,4 +125,10 @@ function createSpecialBall(x, y) {
   let note = random(notesBFlat);
   let specialball = new SpecialBall(x, y, note);
   specialballs.push(specialball);
+}
+
+function createMicBall(x, y) {
+  let note = random(notesBFlat);
+  let micball = new MicBall(x, y, note);
+  micballs.push(micball);
 }

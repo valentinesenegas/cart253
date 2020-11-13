@@ -8,7 +8,6 @@ class MiniBall extends Ball {
       g: random(0, 255),
       b: random(0, 255)
     };
-    this.speed = 19;
 
     // Oscillator
     // Higher frequency than the normal balls

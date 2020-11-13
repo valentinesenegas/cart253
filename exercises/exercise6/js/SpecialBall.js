@@ -3,6 +3,11 @@ class SpecialBall extends Ball {
   constructor(x, y, note) {
     super(x, y, note);
     this.size = 20;
+    this.vxMax = 20;
+    this.vyMax = 20;
+    this.incSize = 1;
+    this.incSizeMax = 60;
+    this.incSizeMin = 5;
     this.fill = {
       r: random(100, 150),
       g: random(120, 130),
@@ -42,19 +47,28 @@ class SpecialBall extends Ball {
       b: random(0, 255)
     };
 
-    background(random(240, 255), random(230, 255), random(225, 255))
+    // background(random(240, 255), random(230, 255), random(225, 255));
   }
 
   increaseSize() {
-    this.size += 1;
-
-    if (this.size > 60) {
-      this.size = 20;
-    }
+    if (this.size > this.incSizeMax)
+      this.incSize = -1;
+    else if (this.size < this.incSizeMin)
+      this.incSize = 1;
+  this.size += this.incSize;
   }
 
   increaseSpeed() {
-    this.speed += 20;
+    this.vx = this.vxMax * (this.vx > 0 ? (this.size / this.incSizeMax) : -(this.size / this.incSizeMax));
+    this.vy = this.vyMax * (this.vy > 0 ? (this.size / this.incSizeMax) : -(this.size / this.incSizeMax));
+
+    // this.vx = this.vx * (this.size 1.2;
+    // this.vy = this.vy * 1.2;
+    //
+    // if (Math.abs(this.vx) >= this.vxMax)
+    //   this.vx = (this.vx > 0 ? this.vxMax : -this.vxMax);
+    // if (Math.abs(this.vy) >= this.vyMax)
+    //   this.vy = (this.vy > 0 ? this.vyMax : -this.vyMax);
   }
 
 
