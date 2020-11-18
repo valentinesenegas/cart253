@@ -1,3 +1,5 @@
+"use strict";
+
 /**************************************************
 Prototype for Project 2
 Valentine Sénégas
@@ -21,6 +23,7 @@ let bg;
 
 let president;
 
+// Dance moves
 let currentDanceMove = null;
 
 let splitDanceMove;
@@ -32,14 +35,19 @@ let punchRightDanceMove;
 let clapLeftDanceMove;
 let clapRightDanceMove;
 
+// Instructions
+let myInstr;
+let instructions = [];
+
 // ---------- //
 // Preload the images and sounds
 function preload() {
-  //bg
+  // Background
   bg = loadImage("assets/images/bg.png");
 
   preloadPresident();
   preloadMoves();
+  preloadInstructions();
 }
 
 // setup()
@@ -62,11 +70,39 @@ function setup() {
 //
 // Description of draw() goes here.
 function draw() {
+
+  // Place the background image
   image(bg, 0, 0);
+
   handleInput();
   if (currentDanceMove != null)
     currentDanceMove.draw();
-}
+
+  // Create random instructions
+  if (random() < 0.01)
+    instructions.push(createRandomInstruction());
+
+  // if (instructions.length === 0) {
+  //   myInstr = createRandomInstruction();
+  //   instructions.push(myInstr);
+  // }
+  // else
+  //   myInstr.draw();
+
+  // Draw instuctions
+  let instruction;
+  for (instruction = 0; instruction < instructions.length; instruction++)
+    instructions[instruction].draw();
+
+  // Destroy the instruction once it has reached the limit
+  for (instruction = 0; instruction < instructions.length; instruction++) {
+    if (instructions[instruction].hasReachedLimit()) {
+      instructions.splice(instruction, 1);
+    }
+  }
+
+} // End of draw()
+
 
 // USER INPUT with arrow keys
 function handleInput() {

@@ -1,3 +1,5 @@
+"use strict";
+
 // ---------- //
 
 // Split
@@ -93,7 +95,7 @@ class DanceMoveLeft extends DanceMove {
     this.imgBack = imgBack;
     this.imgFront = imgFront;
 
-    // Offset for animations on the right side
+    // Offset for animations on the left side
     this.backHandDX = backHandDX;
     this.backHandDY = backHandDY;
     this.frontHandDX = frontHandDX;
