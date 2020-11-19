@@ -4,11 +4,11 @@ let score = 0;
 let scoreX = 1090;
 let scoreY = 875;
 
-function danceMoveSuccess() {
+function hit() {
   score++;
 }
 
-function danceMoveMissed() {
+function missed() {
   score--;
 }
 

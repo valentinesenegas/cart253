@@ -21,26 +21,17 @@ let keyL = 76;
 // ---------- //
 let bg;
 
-let president;
-
 // Dance moves
 let currentDanceMove = null;
 
-let splitDanceMove;
-let accordionDanceMove;
-let pointLeftDanceMove;
-let pointRightDanceMove;
-let punchLeftDanceMove;
-let punchRightDanceMove;
-let clapLeftDanceMove;
-let clapRightDanceMove;
+let atRestDanceMove;
 
 // Instructions
 let instructions = [];
 
 // Feedback messages when missed or successful move
 let missedMessages = ["ZERO!", "WRONG!", "WEAK!", "REALLY BAD!", "LOSER!", "HORRIBLE!"];
-let successMessages = ["YUUUGE!", "SO SMART!", "TOUGH MOVE!", "CLASSY!", "TREMENDOUS!", "GREAT!"];
+let hitMessages = ["YUUUGE!", "SO SMART!", "TOUGH MOVE!", "CLASSY!", "TREMENDOUS!", "GREAT!"];
 
 // Game progress
 let gameProgress = 0;
@@ -55,7 +46,6 @@ function preload() {
   // Background
   bg = loadImage("assets/images/bg.png");
 
-  preloadPresident();
   preloadMoves();
   preloadInstructions();
 
@@ -68,20 +58,14 @@ function preload() {
 //
 // Setup of the score, creation of the canvas, apply the main font for the text
 function setup() {
-  setupScore();
-
   createCanvas(1267, 900);
   textFont(allanBold);
 
-  president = new President();
-  splitDanceMove = new SplitDanceMove(president);
-  accordionDanceMove = new AccordionDanceMove(president);
-  pointLeftDanceMove = new PointLeftDanceMove(president);
-  pointRightDanceMove = new PointRightDanceMove(president);
-  punchLeftDanceMove = new PunchLeftDanceMove(president);
-  punchRightDanceMove = new PunchRightDanceMove(president);
-  clapLeftDanceMove = new ClapLeftDanceMove(president);
-  clapRightDanceMove = new ClapRightDanceMove(president);
+  setupScore();
+  setupDanceMove();
+
+  atRestDanceMove = new AtRestDanceMove(noInstruction);  // -1 = not associated with an instruction.
+  currentDanceMove = atRestDanceMove;
 }
 
 // draw()
@@ -94,7 +78,11 @@ function draw() {
 
   handleInput();
   if (currentDanceMove != null)
+  {
+    if (currentDanceMove.isFinished())
+      currentDanceMove = atRestDanceMove;
     currentDanceMove.draw();
+  }
 
   // Create random instructions
   if (random() < 0.01)
@@ -109,13 +97,20 @@ function draw() {
   // Destroy the instruction once it has reached the limit
   for (instruction = 0; instruction < instructions.length; instruction++) {
     if (instructions[instruction].hasReachedLimit()) {
-      // Remove instruction from the array
-      instructions.splice(instruction, 1);
 
-      let message = Math.floor(Math.random() * missedMessages.length);
-      addMessage(missedMessages[message]);
-
-      danceMoveMissed();
+      if (currentDanceMove.verifyInstructionIndex(instructions[instruction].getInstructionIndex())) {
+        currentDanceMove.setInstructionIndex(noInstruction);
+        instructions.splice(instruction, 1);
+        let message = Math.floor(Math.random() * hitMessages.length);
+        addMessage(hitMessages[message]);
+        hit();
+      } else {
+        // Remove instruction from the array.
+        instructions.splice(instruction, 1);
+        let message = Math.floor(Math.random() * missedMessages.length);
+        addMessage(missedMessages[message]);
+        missed();
+      }
     }
   }
 
@@ -132,24 +127,24 @@ function handleInput() {
 
   // Left side
   if (keyIsDown(keyA)) {
-    currentDanceMove = punchLeftDanceMove;
+    currentDanceMove = new PunchLeftDanceMove(instructionPunchLeftDanceMove);
   } else if (keyIsDown(keyS)) {
-    currentDanceMove = clapLeftDanceMove;
+    currentDanceMove = new ClapLeftDanceMove(instructionClapLeftDanceMove);
   } else if (keyIsDown(keyD)) {
-    currentDanceMove = pointLeftDanceMove;
+    currentDanceMove = new PointLeftDanceMove(instructionPointLeftDanceMove);
   } else if (keyIsDown(keyF)) {
-    currentDanceMove = accordionDanceMove;
+    currentDanceMove = new AccordionDanceMove(instructionAccordionDanceMove);
   }
 
   // Right side
-  if (keyIsDown(keyL)) {
-    currentDanceMove = punchRightDanceMove;
-  } else if (keyIsDown(keyK)) {
-    currentDanceMove = clapRightDanceMove;
+  if (keyIsDown(keyH)) {
+   currentDanceMove = new SplitDanceMove(instructionSplitDanceMove);
   } else if (keyIsDown(keyJ)) {
-    currentDanceMove = pointRightDanceMove;
-  } else if (keyIsDown(keyH)) {
-    currentDanceMove = splitDanceMove;
+  currentDanceMove = new PointRightDanceMove(instructionPointRightDanceMove);
+  } else if (keyIsDown(keyK)) {
+    currentDanceMove = new ClapRightDanceMove(instructionClapRightDanceMove);
+  } else if (keyIsDown(keyL)) {
+   currentDanceMove = new PunchRightDanceMove(instructionPunchRightDanceMove);
   }
 
 } // End handleInput()

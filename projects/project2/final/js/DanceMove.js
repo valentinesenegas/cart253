@@ -1,6 +1,11 @@
 "use strict";
 
 // ---------- //
+// Images used for the dance moves
+let character = null;
+
+// At rest
+let imgAtRest;
 
 // Split
 let imgSplit;
@@ -27,9 +32,14 @@ let imgOpenHandBackRight;
 
 
 // ---------- //
-
 // Preload the images and sounds
 function preloadMoves() {
+  // Preload assets for the main character
+  preloadCharacter();
+
+  // At rest.
+  imgAtRest = loadImage("assets/images/at-rest.png");
+
   // Split
   imgSplit = loadImage("assets/images/split.png");
 
@@ -54,20 +64,41 @@ function preloadMoves() {
   imgOpenHandBackRight = loadImage("assets/images/openHandBack1.png");
 }
 
+function setupDanceMove() {
+  character = new Character();
+}
 
 // ---------- //
 
 class DanceMove {
-  constructor(president) {
-    this.president = president;
+  constructor(instructionIndex) {
+    this.instructionIndex = instructionIndex;
+    this.character = character;
+    this.timeToLive = 30;   // Draw the dance move during 30 frames.
   }
-  draw() {}
+
+  draw() {
+    if (this.timeToLive > 0)
+      this.timeToLive--;
+  }
+
+  isFinished() {
+    return (this.timeToLive <= 0);
+  }
+
+  verifyInstructionIndex(instructionIndexToVerify) {
+    return (this.instructionIndex === instructionIndexToVerify);
+  }
+
+  setInstructionIndex(instructionIndexToSet) {
+    this.instructionIndex = instructionIndexToSet;
+  }
 }
 
-
+// Dance moves on the right sides (5 to 8) - JKL keys
 class DanceMoveRight extends DanceMove {
-  constructor(president, imgBack, imgFront, backHandDX, backHandDY, frontHandDX, frontHandDY) {
-    super(president);
+  constructor(instructionIndex, imgBack, imgFront, backHandDX, backHandDY, frontHandDX, frontHandDY) {
+    super(instructionIndex);
     this.imgBack = imgBack;
     this.imgFront = imgFront;
 
@@ -81,17 +112,18 @@ class DanceMoveRight extends DanceMove {
   draw() {
     push();
     imageMode(CORNER);
-    image(this.imgBack, president.getX() + this.backHandDX, president.getY() + this.backHandDY);
-    president.drawPresidentRight();
-    image(this.imgFront, president.getX() + this.frontHandDX, president.getY() + this.frontHandDY);
+    image(this.imgBack, this.character.getX() + this.backHandDX, this.character.getY() + this.backHandDY);
+    character.drawCharacterRight();
+    image(this.imgFront, this.character.getX() + this.frontHandDX, this.character.getY() + this.frontHandDY);
     pop();
+    super.draw();
   }
 }
 
-
+// Dance moves on the left sides (1 to 4) - ASD keys
 class DanceMoveLeft extends DanceMove {
-  constructor(president, imgBack, imgFront, backHandDX, backHandDY, frontHandDX, frontHandDY) {
-    super(president);
+  constructor(instructionIndex, imgBack, imgFront, backHandDX, backHandDY, frontHandDX, frontHandDY) {
+    super(instructionIndex);
     this.imgBack = imgBack;
     this.imgFront = imgFront;
 
@@ -105,21 +137,34 @@ class DanceMoveLeft extends DanceMove {
   draw() {
     push();
     imageMode(CORNER);
-    image(this.imgBack, president.getX() + this.backHandDX, president.getY() + this.backHandDY);
-    president.drawPresidentLeft();
-    image(this.imgFront, president.getX() + this.frontHandDX, president.getY() + this.frontHandDY);
+    image(this.imgBack, this.character.getX() + this.backHandDX, this.character.getY() + this.backHandDY);
+    character.drawCharacterLeft();
+    image(this.imgFront, this.character.getX() + this.frontHandDX, this.character.getY() + this.frontHandDY);
     pop();
+    super.draw();
   }
 }
 
+
+// Split
+class AtRestDanceMove extends DanceMove {
+  draw() {
+    push();
+    imageMode(CENTER);
+    image(imgAtRest, this.character.getX(), this.character.getY());
+    pop();
+    super.draw();
+  }
+}
 
 // Split
 class SplitDanceMove extends DanceMove {
   draw() {
     push();
     imageMode(CENTER);
-    image(imgSplit, president.getX(), president.getY() + 60);
+    image(imgSplit, this.character.getX(), this.character.getY() + 60);
     pop();
+    super.draw();
   }
 }
 
@@ -128,47 +173,48 @@ class AccordionDanceMove extends DanceMove {
   draw() {
     push();
     imageMode(CENTER);
-    image(imgBodyPresidentLeft, president.getX(), president.getY());
-    image(imgAccordion, president.getX(), president.getY() + 50);
+    image(imgBodyCharacterLeft, character.getX(), character.getY());
+    image(imgAccordion, this.character.getX(), this.character.getY() + 50);
     pop();
+    super.draw();
   }
 }
 
 
 // pointLeft & pointRight
 class PointLeftDanceMove extends DanceMoveLeft {
-  constructor(president) {
-    super(president, imgClenchedFistBackLeft, imgPointLeft, -300, 0, -230, -100);
+  constructor(instructionIndex) {
+    super(instructionIndex, imgClenchedFistBackLeft, imgPointLeft, -300, 0, -230, -100);
   }
 }
 class PointRightDanceMove extends DanceMoveRight {
-  constructor(president) {
-    super(president, imgRightArmNormal, imgPointRight, -20, -50, -140, -100);
+  constructor(instructionIndex) {
+    super(instructionIndex, imgRightArmNormal, imgPointRight, -20, -50, -140, -100);
   }
 }
 
 
 // punchLeft & punchRight
 class PunchLeftDanceMove extends DanceMoveLeft {
-  constructor(president) {
-    super(president, imgClenchedFistBackLeft, imgClenchedFistFrontLeft, -300, -45, -75, -70);
+  constructor(instructionIndex) {
+    super(instructionIndex, imgClenchedFistBackLeft, imgClenchedFistFrontLeft, -300, -45, -75, -70);
   }
 }
 class PunchRightDanceMove extends DanceMoveRight {
-  constructor(president) {
-    super(president, imgClenchedFistBackRight, imgClenchedFistFrontRight, -10, -20, -110, -30);
+  constructor(instructionIndex) {
+    super(instructionIndex, imgClenchedFistBackRight, imgClenchedFistFrontRight, -10, -20, -110, -30);
   }
 }
 
 
 // clapLeft & clapRight
 class ClapLeftDanceMove extends DanceMoveLeft {
-  constructor(president) {
-    super(president, imgOpenHandBackLeft, imgOpenHandFrontLeft, -200, -50, -160, -50);
+  constructor(instructionIndex) {
+    super(instructionIndex, imgOpenHandBackLeft, imgOpenHandFrontLeft, -200, -50, -160, -50);
   }
 }
 class ClapRightDanceMove extends DanceMoveRight {
-  constructor(president) {
-    super(president, imgOpenHandBackRight, imgOpenHandFrontRight, 10, -20, -130, -30);
+  constructor(instructionIndex) {
+    super(instructionIndex, imgOpenHandBackRight, imgOpenHandFrontRight, 10, -20, -130, -30);
   }
 }

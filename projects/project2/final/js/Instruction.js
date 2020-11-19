@@ -1,5 +1,15 @@
 "use strict";
 
+let noInstruction = -1;
+let instructionPunchLeftDanceMove = 0;
+let instructionClapLeftDanceMove = 1;
+let instructionPointLeftDanceMove = 2;
+let instructionAccordionDanceMove = 3;
+let instructionSplitDanceMove = 4;
+let instructionPointRightDanceMove = 5;
+let instructionClapRightDanceMove = 6;
+let instructionPunchRightDanceMove = 7;
+
 // Number of instructions
 let maxInstructions = 8;
 
@@ -36,10 +46,10 @@ function preloadInstructions() {
 }
 
 class Instruction {
-  constructor(imgInstruction, index) {
+  constructor(imgInstruction, instruction) {
     this.img = imgInstruction;
-    this.index = index;
-    this.startX = (index < (maxInstructions / 2) ? index * 87 + 10 : index * 87 + 555);
+    this.instruction = instruction;
+    this.startX = (instruction < (maxInstructions / 2) ? instruction * 87 + 10 : instruction * 87 + 555);
     this.startY = 150;
     this.offsetY = 0;
     this.speedY = 2;
@@ -57,6 +67,10 @@ class Instruction {
 
   hasReachedLimit() {
     return this.offsetY >= this.limitY;
+  }
+
+  getInstructionIndex() {
+    return this.instruction;
   }
 
 } // End of Instruction class
