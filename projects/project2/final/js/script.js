@@ -36,8 +36,8 @@ let clapLeftDanceMove;
 let clapRightDanceMove;
 
 // Instructions
-let myInstr;
 let instructions = [];
+let missedMessage = "Missed!";
 
 // ---------- //
 // Preload the images and sounds
@@ -82,25 +82,22 @@ function draw() {
   if (random() < 0.01)
     instructions.push(createRandomInstruction());
 
-  // if (instructions.length === 0) {
-  //   myInstr = createRandomInstruction();
-  //   instructions.push(myInstr);
-  // }
-  // else
-  //   myInstr.draw();
-
   // Draw instuctions
   let instruction;
   for (instruction = 0; instruction < instructions.length; instruction++)
     instructions[instruction].draw();
 
+  // Missed instruction?
   // Destroy the instruction once it has reached the limit
   for (instruction = 0; instruction < instructions.length; instruction++) {
     if (instructions[instruction].hasReachedLimit()) {
       instructions.splice(instruction, 1);
+      addMessage(missedMessage);
+      }
     }
-  }
 
+  // Display messages.
+  drawMessages();
 } // End of draw()
 
 
