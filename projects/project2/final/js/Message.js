@@ -6,8 +6,8 @@ class Message {
 
   constructor(text) {
     this.text = text;
-    this.startX = 600;
-    this.startY = 300;
+    this.startX = 633;
+    this.startY = 200;
     this.offsetY = 0;
     this.speedY = -2;
     this.limitY = -200;
@@ -15,8 +15,10 @@ class Message {
 
   draw() {
     push();
-    textSize(36);
-    textAlign(LEFT, CENTER);
+    textSize(56);
+    textAlign(CENTER, CENTER);
+    stroke('#A00828');
+    strokeWeight(4);
     fill(221, 78, 108);
     text(this.text, this.startX, this.startY + this.offsetY);
     this.offsetY += this.speedY;

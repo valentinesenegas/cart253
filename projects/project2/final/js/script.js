@@ -1,7 +1,7 @@
 "use strict";
 
 /**************************************************
-Prototype for Project 2
+Project 2
 Valentine Sénégas
 
 Make the president dance!
@@ -37,10 +37,20 @@ let clapRightDanceMove;
 
 // Instructions
 let instructions = [];
-let missedMessage = "Missed!";
+
+// Feedback messages when missed or successful move
+let missedMessages = ["ZERO!", "WRONG!", "WEAK!", "REALLY BAD!", "LOSER!", "HORRIBLE!"];
+let successMessages = ["YUUUGE!", "SO SMART!", "TOUGH MOVE!", "CLASSY!", "TREMENDOUS!", "GREAT!"];
+
+// Game progress
+let gameProgress = 0;
+
+// Fonts
+let allanBold;
+let allanRegular;
 
 // ---------- //
-// Preload the images and sounds
+// Preload the images, sounds, fonts
 function preload() {
   // Background
   bg = loadImage("assets/images/bg.png");
@@ -48,13 +58,21 @@ function preload() {
   preloadPresident();
   preloadMoves();
   preloadInstructions();
+
+  // Google Font: Allan
+  allanBold = loadFont("assets/fonts/Allan-Bold.ttf");
+  allanRegular = loadFont("assets/fonts/Allan-Regular.ttf");
 }
 
 // setup()
 //
-// Description of setup() goes here.
+// Setup of the score, creation of the canvas, apply the main font for the text
 function setup() {
+  setupScore();
+
   createCanvas(1267, 900);
+  textFont(allanBold);
+
   president = new President();
   splitDanceMove = new SplitDanceMove(president);
   accordionDanceMove = new AccordionDanceMove(president);
@@ -91,13 +109,21 @@ function draw() {
   // Destroy the instruction once it has reached the limit
   for (instruction = 0; instruction < instructions.length; instruction++) {
     if (instructions[instruction].hasReachedLimit()) {
+      // Remove instruction from the array
       instructions.splice(instruction, 1);
-      addMessage(missedMessage);
-      }
-    }
 
-  // Display messages.
+      let message = Math.floor(Math.random() * missedMessages.length);
+      addMessage(missedMessages[message]);
+
+      danceMoveMissed();
+    }
+  }
+
+  // Display messages, score and progress.
   drawMessages();
+  drawScore();
+  drawProgress(Math.min(gameProgress, 400), 400);
+  gameProgress++;
 } // End of draw()
 
 
