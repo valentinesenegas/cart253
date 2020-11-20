@@ -1,5 +1,6 @@
 "use strict";
 
+// Index constants for our instructions.
 let noInstruction = -1;
 let instructionPunchLeftDanceMove = 0;
 let instructionClapLeftDanceMove = 1;
@@ -19,37 +20,23 @@ let instructionImages = [];
 // Preload the images for the instructions
 function preloadInstructions() {
   //  LEFT
-  // punchLeft
   instructionImages.push(loadImage("assets/images/instructions/instruction-punch-left.png"));
-
-  // clapLeft
   instructionImages.push(loadImage("assets/images/instructions/instruction-clap-left.png"));
-
-  // pointLeft
   instructionImages.push(loadImage("assets/images/instructions/instruction-point-left.png"));
-
-  // Accordion
   instructionImages.push(loadImage("assets/images/instructions/instruction-accordion.png"));
 
   //  RIGHT
-  // Split
   instructionImages.push(loadImage("assets/images/instructions/instruction-split.png"));
-
-  // pointRight
   instructionImages.push(loadImage("assets/images/instructions/instruction-point-right.png"));
-
-  // clapRight
   instructionImages.push(loadImage("assets/images/instructions/instruction-clap-right.png"));
-
-  // punchRight
   instructionImages.push(loadImage("assets/images/instructions/instruction-punch-right.png"));
 }
 
 class Instruction {
-  constructor(imgInstruction, instruction) {
+  constructor(imgInstruction, instructionIndex) {
     this.img = imgInstruction;
-    this.instruction = instruction;
-    this.startX = (instruction < (maxInstructions / 2) ? instruction * 87 + 10 : instruction * 87 + 555);
+    this.instructionIndex = instructionIndex;
+    this.startX = (instructionIndex < (maxInstructions / 2) ? instructionIndex * 87 + 10 : instructionIndex * 87 + 555);
     this.startY = 150;
     this.offsetY = 0;
     this.speedY = 2;
@@ -70,14 +57,12 @@ class Instruction {
   }
 
   getInstructionIndex() {
-    return this.instruction;
+    return this.instructionIndex;
   }
 
 } // End of Instruction class
 
 function createRandomInstruction() {
-  let instruction = Math.floor(random() * maxInstructions);
-  return new Instruction(instructionImages[instruction], instruction);
+  let instructionIndex = Math.floor(random() * maxInstructions);
+  return new Instruction(instructionImages[instructionIndex], instructionIndex);
 }
-
-// Setup instructions

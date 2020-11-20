@@ -93,6 +93,10 @@ class DanceMove {
   setInstructionIndex(instructionIndexToSet) {
     this.instructionIndex = instructionIndexToSet;
   }
+
+  getInstructionIndex() {
+    return this.instructionIndex;
+  }
 }
 
 // Dance moves on the right sides (5 to 8) - JKL keys
