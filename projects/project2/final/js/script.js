@@ -7,6 +7,8 @@ Valentine Sénégas
 Make the president dance!
 **************************************************/
 
+// --- VARIABLES --- //
+
 // Arrow keys and their keyCodes
 let keyA = 65;
 let keyS = 83;
@@ -39,6 +41,15 @@ let hitMessages = ["YUUUGE!", "SO SMART!", "TOUGH MOVE!", "CLASSY!", "TREMENDOUS
 // Game progress
 let gameProgress = 0;
 
+// Current song.
+let currentSong;
+let song = null;
+
+// State of the game: can be title, song1,... endWin, endLose
+let state;
+
+
+// ---------- //
 // Fonts
 let allanBold;
 let allanRegular;
@@ -46,15 +57,16 @@ let allanRegular;
 // ---------- //
 // Preload the images, sounds, fonts
 function preload() {
+  // Google Font: Allan
+  allanBold = loadFont("assets/fonts/Allan-Bold.ttf");
+  allanRegular = loadFont("assets/fonts/Allan-Regular.ttf");
+
   // Background
   bg = loadImage("assets/images/bg.png");
 
   preloadMoves();
   preloadInstructions();
-
-  // Google Font: Allan
-  allanBold = loadFont("assets/fonts/Allan-Bold.ttf");
-  allanRegular = loadFont("assets/fonts/Allan-Regular.ttf");
+  preloadSongs();
 }
 
 // setup()
@@ -66,9 +78,14 @@ function setup() {
 
   setupScore();
   setupDanceMove();
+  setupSongs();
 
   atRestDanceMove = new AtRestDanceMove(noInstruction);  // -1 = not associated with an instruction.
   currentDanceMove = atRestDanceMove;
+
+  // Get first song.
+  currentSong = 0;
+  song = getSong(currentSong);
 }
 
 // draw()
@@ -146,27 +163,79 @@ function draw() {
 
 
 // USER INPUT with arrow keys
+let keyPressedA = false;
+let keyPressedS = false;
+let keyPressedD = false;
+let keyPressedF = false;
+let keyPressedH = false;
+let keyPressedJ = false;
+let keyPressedK = false;
+let keyPressedL = false;
+
 function handleInput() {
   // Left side
-  if (keyIsDown(keyA)) {
+
+// If the B key is pressed, start song.
+  if (keyIsDown(66))
+    song.play();
+
+  if (keyIsDown(keyA) && keyPressedA === false) {
+    addMessage("PunchLeftDanceMove");
+    keyPressedA = true;
     return new PunchLeftDanceMove(instructionPunchLeftDanceMove);
-  } else if (keyIsDown(keyS)) {
+  } else if (keyIsDown(keyS) && keyPressedS === false) {
+    addMessage("ClapLeftDanceMove");
+    keyPressedS = true;
     return new ClapLeftDanceMove(instructionClapLeftDanceMove);
-  } else if (keyIsDown(keyD)) {
+  } else if (keyIsDown(keyD) && keyPressedD === false) {
+    addMessage("PointLeftDanceMove");
+    keyPressedD = true;
     return new PointLeftDanceMove(instructionPointLeftDanceMove);
-  } else if (keyIsDown(keyF)) {
+  } else if (keyIsDown(keyF) && keyPressedF === false) {
+    addMessage("AccordionDanceMove");
+    keyPressedF = true;
     return new AccordionDanceMove(instructionAccordionDanceMove);
   }
 
   // Right side
-  if (keyIsDown(keyH)) {
+  else if (keyIsDown(keyH) && keyPressedH === false) {
+    addMessage("SplitDanceMove");
+    keyPressedH = true;
     return new SplitDanceMove(instructionSplitDanceMove);
-  } else if (keyIsDown(keyJ)) {
+  } else if (keyIsDown(keyJ) && keyPressedJ === false) {
+    addMessage("PointRightDanceMove");
+    keyPressedJ = true;
     return new PointRightDanceMove(instructionPointRightDanceMove);
-  } else if (keyIsDown(keyK)) {
+  } else if (keyIsDown(keyK) && keyPressedK === false) {
+    addMessage("ClapRightDanceMove");
+    keyPressedK = true;
     return new ClapRightDanceMove(instructionClapRightDanceMove);
-  } else if (keyIsDown(keyL)) {
+  } else if (keyIsDown(keyL) && keyPressedL === false) {
+    addMessage("PunchRightDanceMove");
+    keyPressedL = true;
     return new PunchRightDanceMove(instructionPunchRightDanceMove);
   }
-
 } // End handleInput()
+
+function keyReleased() {
+  // Detect released keys.
+  // Left side
+  if (keyCode == keyA)
+    keyPressedA = false;
+  else if (keyCode == keyS)
+    keyPressedS = false;
+  else if (keyCode == keyD)
+    keyPressedD = false;
+  else if (keyCode == keyF)
+    keyPressedF = false;
+
+  // Right side
+  else if (keyCode == keyH)
+    keyPressedH = false;
+  else if (keyCode == keyJ)
+    keyPressedJ = false;
+  else if (keyCode == keyK)
+    keyPressedK = false;
+  else if (keyCode == keyL)
+    keyPressedL = false;
+}
