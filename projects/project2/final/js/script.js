@@ -1,7 +1,7 @@
 "use strict";
 
 /**************************************************
-Project 2
+Project 2 - Just PresiDance
 Valentine Sénégas
 
 Make the president dance!
@@ -64,6 +64,7 @@ function preload() {
   // Background
   bg = loadImage("assets/images/bg.png");
 
+  preloadCharacter();
   preloadMoves();
   preloadInstructions();
   preloadSongs();
@@ -77,7 +78,6 @@ function setup() {
   textFont(allanBold);
 
   setupScore();
-  setupDanceMove();
   setupSongs();
 
   atRestDanceMove = new AtRestDanceMove(noInstruction);  // -1 = not associated with an instruction.
@@ -98,7 +98,7 @@ function draw() {
 
   // Get new dance move as input by the user.
   let newDanceMove;
-  newDanceMove = handleInput();
+  newDanceMove = createDanceMoveFromInput();
   if (newDanceMove != null)
     currentDanceMove = newDanceMove;
 
@@ -172,50 +172,6 @@ let keyPressedJ = false;
 let keyPressedK = false;
 let keyPressedL = false;
 
-function handleInput() {
-  // Left side
-
-// If the B key is pressed, start song.
-  if (keyIsDown(66))
-    song.play();
-
-  if (keyIsDown(keyA) && keyPressedA === false) {
-    addMessage("PunchLeftDanceMove");
-    keyPressedA = true;
-    return new PunchLeftDanceMove(instructionPunchLeftDanceMove);
-  } else if (keyIsDown(keyS) && keyPressedS === false) {
-    addMessage("ClapLeftDanceMove");
-    keyPressedS = true;
-    return new ClapLeftDanceMove(instructionClapLeftDanceMove);
-  } else if (keyIsDown(keyD) && keyPressedD === false) {
-    addMessage("PointLeftDanceMove");
-    keyPressedD = true;
-    return new PointLeftDanceMove(instructionPointLeftDanceMove);
-  } else if (keyIsDown(keyF) && keyPressedF === false) {
-    addMessage("AccordionDanceMove");
-    keyPressedF = true;
-    return new AccordionDanceMove(instructionAccordionDanceMove);
-  }
-
-  // Right side
-  else if (keyIsDown(keyH) && keyPressedH === false) {
-    addMessage("SplitDanceMove");
-    keyPressedH = true;
-    return new SplitDanceMove(instructionSplitDanceMove);
-  } else if (keyIsDown(keyJ) && keyPressedJ === false) {
-    addMessage("PointRightDanceMove");
-    keyPressedJ = true;
-    return new PointRightDanceMove(instructionPointRightDanceMove);
-  } else if (keyIsDown(keyK) && keyPressedK === false) {
-    addMessage("ClapRightDanceMove");
-    keyPressedK = true;
-    return new ClapRightDanceMove(instructionClapRightDanceMove);
-  } else if (keyIsDown(keyL) && keyPressedL === false) {
-    addMessage("PunchRightDanceMove");
-    keyPressedL = true;
-    return new PunchRightDanceMove(instructionPunchRightDanceMove);
-  }
-} // End handleInput()
 
 function keyReleased() {
   // Detect released keys.

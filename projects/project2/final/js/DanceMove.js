@@ -2,7 +2,6 @@
 
 // ---------- //
 // Images used for the dance moves
-let character = null;
 
 // At rest
 let imgAtRest;
@@ -34,9 +33,6 @@ let imgOpenHandBackRight;
 // ---------- //
 // Preload the images and sounds
 function preloadMoves() {
-  // Preload assets for the main character
-  preloadCharacter();
-
   // At rest.
   imgAtRest = loadImage("assets/images/at-rest.png");
 
@@ -64,16 +60,12 @@ function preloadMoves() {
   imgOpenHandBackRight = loadImage("assets/images/openHandBack1.png");
 }
 
-function setupDanceMove() {
-  character = new Character();
-}
-
 // ---------- //
 
 class DanceMove {
   constructor(instructionIndex) {
     this.instructionIndex = instructionIndex;
-    this.character = character;
+    this.character = GetCharacter();
     this.timeToLive = 30;   // Draw the dance move during 30 frames.
   }
 
@@ -117,7 +109,7 @@ class DanceMoveRight extends DanceMove {
     push();
     imageMode(CORNER);
     image(this.imgBack, this.character.getX() + this.backHandDX, this.character.getY() + this.backHandDY);
-    character.drawCharacterRight();
+    this.character.drawCharacterRight();
     image(this.imgFront, this.character.getX() + this.frontHandDX, this.character.getY() + this.frontHandDY);
     pop();
     super.draw();
@@ -142,7 +134,7 @@ class DanceMoveLeft extends DanceMove {
     push();
     imageMode(CORNER);
     image(this.imgBack, this.character.getX() + this.backHandDX, this.character.getY() + this.backHandDY);
-    character.drawCharacterLeft();
+    this.character.drawCharacterLeft();
     image(this.imgFront, this.character.getX() + this.frontHandDX, this.character.getY() + this.frontHandDY);
     pop();
     super.draw();
@@ -177,7 +169,7 @@ class AccordionDanceMove extends DanceMove {
   draw() {
     push();
     imageMode(CENTER);
-    image(imgBodyCharacterLeft, character.getX(), character.getY());
+    image(imgBodyCharacterLeft, this.character.getX(), this.character.getY());
     image(imgAccordion, this.character.getX(), this.character.getY() + 50);
     pop();
     super.draw();
@@ -221,4 +213,49 @@ class ClapRightDanceMove extends DanceMoveRight {
   constructor(instructionIndex) {
     super(instructionIndex, imgOpenHandBackRight, imgOpenHandFrontRight, 10, -20, -130, -30);
   }
+}
+
+
+function createDanceMoveFromInput() {
+  //temporary
+  // If the B key is pressed, start song.
+  if (keyIsDown(66))
+  song.play();
+
+  // Left side
+  if (keyIsDown(keyA) && keyPressedA === false) {
+    keyPressedA = true;
+    return new PunchLeftDanceMove(instructionPunchLeftDanceMove);
+  }
+  else if (keyIsDown(keyS) && keyPressedS === false) {
+    keyPressedS = true;
+    return new ClapLeftDanceMove(instructionClapLeftDanceMove);
+  }
+  else if (keyIsDown(keyD) && keyPressedD === false) {
+    keyPressedD = true;
+    return new PointLeftDanceMove(instructionPointLeftDanceMove);
+  }
+  else if (keyIsDown(keyF) && keyPressedF === false) {
+    keyPressedF = true;
+    return new AccordionDanceMove(instructionAccordionDanceMove);
+  }
+
+  // Right side
+  else if (keyIsDown(keyH) && keyPressedH === false) {
+    keyPressedH = true;
+    return new SplitDanceMove(instructionSplitDanceMove);
+  }
+  else if (keyIsDown(keyJ) && keyPressedJ === false) {
+    keyPressedJ = true;
+    return new PointRightDanceMove(instructionPointRightDanceMove);
+  }
+  else if (keyIsDown(keyK) && keyPressedK === false) {
+    keyPressedK = true;
+    return new ClapRightDanceMove(instructionClapRightDanceMove);
+  }
+  else if (keyIsDown(keyL) && keyPressedL === false) {
+    keyPressedL = true;
+    return new PunchRightDanceMove(instructionPunchRightDanceMove);
+  }
+  return null;
 }
