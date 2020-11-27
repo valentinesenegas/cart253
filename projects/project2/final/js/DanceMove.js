@@ -63,8 +63,8 @@ function preloadMoves() {
 // ---------- //
 
 class DanceMove {
-  constructor(instructionIndex) {
-    this.instructionIndex = instructionIndex;
+  constructor(instructionId) {
+    this.instructionId = instructionId;
     this.character = GetCharacter();
     this.timeToLive = 30;   // Draw the dance move during 30 frames.
   }
@@ -78,23 +78,23 @@ class DanceMove {
     return (this.timeToLive <= 0);
   }
 
-  verifyInstructionIndex(instructionIndexToVerify) {
-    return (this.instructionIndex === instructionIndexToVerify);
+  verifyInstructionId(instructionIdToVerify) {
+    return (this.instructionId === instructionIdToVerify);
   }
 
-  setInstructionIndex(instructionIndexToSet) {
-    this.instructionIndex = instructionIndexToSet;
+  setInstructionId(instructionIdToSet) {
+    this.instructionId = instructionIdToSet;
   }
 
-  getInstructionIndex() {
-    return this.instructionIndex;
+  getInstructionId() {
+    return this.instructionId;
   }
 }
 
 // Dance moves on the right sides (5 to 8) - JKL keys
 class DanceMoveRight extends DanceMove {
-  constructor(instructionIndex, imgBack, imgFront, backHandDX, backHandDY, frontHandDX, frontHandDY) {
-    super(instructionIndex);
+  constructor(instructionId, imgBack, imgFront, backHandDX, backHandDY, frontHandDX, frontHandDY) {
+    super(instructionId);
     this.imgBack = imgBack;
     this.imgFront = imgFront;
 
@@ -118,8 +118,8 @@ class DanceMoveRight extends DanceMove {
 
 // Dance moves on the left sides (1 to 4) - ASD keys
 class DanceMoveLeft extends DanceMove {
-  constructor(instructionIndex, imgBack, imgFront, backHandDX, backHandDY, frontHandDX, frontHandDY) {
-    super(instructionIndex);
+  constructor(instructionId, imgBack, imgFront, backHandDX, backHandDY, frontHandDX, frontHandDY) {
+    super(instructionId);
     this.imgBack = imgBack;
     this.imgFront = imgFront;
 
@@ -179,83 +179,78 @@ class AccordionDanceMove extends DanceMove {
 
 // pointLeft & pointRight
 class PointLeftDanceMove extends DanceMoveLeft {
-  constructor(instructionIndex) {
-    super(instructionIndex, imgClenchedFistBackLeft, imgPointLeft, -300, 0, -230, -100);
+  constructor(instructionId) {
+    super(instructionId, imgClenchedFistBackLeft, imgPointLeft, -300, 0, -230, -100);
   }
 }
 class PointRightDanceMove extends DanceMoveRight {
-  constructor(instructionIndex) {
-    super(instructionIndex, imgRightArmNormal, imgPointRight, -20, -50, -140, -100);
+  constructor(instructionId) {
+    super(instructionId, imgRightArmNormal, imgPointRight, -20, -50, -140, -100);
   }
 }
 
 
 // punchLeft & punchRight
 class PunchLeftDanceMove extends DanceMoveLeft {
-  constructor(instructionIndex) {
-    super(instructionIndex, imgClenchedFistBackLeft, imgClenchedFistFrontLeft, -300, -45, -75, -70);
+  constructor(instructionId) {
+    super(instructionId, imgClenchedFistBackLeft, imgClenchedFistFrontLeft, -300, -45, -75, -70);
   }
 }
 class PunchRightDanceMove extends DanceMoveRight {
-  constructor(instructionIndex) {
-    super(instructionIndex, imgClenchedFistBackRight, imgClenchedFistFrontRight, -10, -20, -110, -30);
+  constructor(instructionId) {
+    super(instructionId, imgClenchedFistBackRight, imgClenchedFistFrontRight, -10, -20, -110, -30);
   }
 }
 
 
 // clapLeft & clapRight
 class ClapLeftDanceMove extends DanceMoveLeft {
-  constructor(instructionIndex) {
-    super(instructionIndex, imgOpenHandBackLeft, imgOpenHandFrontLeft, -200, -50, -160, -50);
+  constructor(instructionId) {
+    super(instructionId, imgOpenHandBackLeft, imgOpenHandFrontLeft, -200, -50, -160, -50);
   }
 }
 class ClapRightDanceMove extends DanceMoveRight {
-  constructor(instructionIndex) {
-    super(instructionIndex, imgOpenHandBackRight, imgOpenHandFrontRight, 10, -20, -130, -30);
+  constructor(instructionId) {
+    super(instructionId, imgOpenHandBackRight, imgOpenHandFrontRight, 10, -20, -130, -30);
   }
 }
 
 
 function createDanceMoveFromInput() {
-  //temporary
-  // If the B key is pressed, start song.
-  if (keyIsDown(66))
-  song.play();
-
   // Left side
   if (keyIsDown(keyA) && keyPressedA === false) {
     keyPressedA = true;
-    return new PunchLeftDanceMove(instructionPunchLeftDanceMove);
+    return new PunchLeftDanceMove(instructionPunchLeftId);
   }
   else if (keyIsDown(keyS) && keyPressedS === false) {
     keyPressedS = true;
-    return new ClapLeftDanceMove(instructionClapLeftDanceMove);
+    return new ClapLeftDanceMove(instructionClapLeftId);
   }
   else if (keyIsDown(keyD) && keyPressedD === false) {
     keyPressedD = true;
-    return new PointLeftDanceMove(instructionPointLeftDanceMove);
+    return new PointLeftDanceMove(instructionPointLeftId);
   }
   else if (keyIsDown(keyF) && keyPressedF === false) {
     keyPressedF = true;
-    return new AccordionDanceMove(instructionAccordionDanceMove);
+    return new AccordionDanceMove(instructionAccordionId);
   }
 
   // Right side
   else if (keyIsDown(keyH) && keyPressedH === false) {
     keyPressedH = true;
-    return new SplitDanceMove(instructionSplitDanceMove);
+    return new SplitDanceMove(instructionSplitId);
   }
   else if (keyIsDown(keyJ) && keyPressedJ === false) {
     keyPressedJ = true;
-    return new PointRightDanceMove(instructionPointRightDanceMove);
+    return new PointRightDanceMove(instructionPointRightId);
   }
   else if (keyIsDown(keyK) && keyPressedK === false) {
     keyPressedK = true;
-    return new ClapRightDanceMove(instructionClapRightDanceMove);
+    return new ClapRightDanceMove(instructionClapRightId);
   }
   else if (keyIsDown(keyL) && keyPressedL === false) {
     keyPressedL = true;
-    return new PunchRightDanceMove(instructionPunchRightDanceMove);
+    return new PunchRightDanceMove(instructionPunchRightId);
   }
   return null;
 }

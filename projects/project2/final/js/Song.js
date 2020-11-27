@@ -2,11 +2,11 @@
 
 let ymcaFile;
 let ymcaDelay = 1000;
-let ymcaTempo = 40;
+let ymcaTempo = (60 * 1000) / 96; //  beat per minute, converted to milliseconds per beat
 let ymcaDuration = 20000;
-let ymcaMoves = [
+let ymcaInstructionIds = [
     // Intro
-    0, 1, 2, 4, 9,
+    0, 1, 2, 4, 6,
 
     // First verse
     0, 1, 2, 4, 5,
@@ -23,21 +23,39 @@ let ymcaMoves = [
 
 let songs = [];
 
-function getSong(index) {
-  return songs[index];
+function getSong(songId) {
+  return songs[songId];
 }
 
 function preloadSongs() {
-  ymcaFile = loadSound('assets/sounds/YMCA.mp3');
+  soundFormats('mp3');
+  ymcaFile = loadSound('assets/sounds/YMCA');
 }
 
 class Song {
-  constructor(file, delay, tempo, duration, moves) {
+  constructor(file, delay, tempo, duration, instructionIds) {
     this.file = file;
     this.delay = delay;
     this.tempo = tempo;
     this.duration = duration;
-    this.moves = moves;
+    this.instructionIds = instructionIds;
+
+    this.startTime = 0;
+    this.lastInstructionIdIndex = -1;
+    this.total = 0;
+    this.progress = 0;
+
+    // Determine the total number of instructions.
+    let index;
+    for (index = 0; index < instructionIds.length; index++)
+      if (this.instructionIds[index] >= 0)
+        this.total++;
+  }
+
+  play(){
+    this.file.play();
+    this.lastInstructionIdIndex = -1;
+    this.startTime = Date.now();
   }
 
   getDelay() {
@@ -52,15 +70,35 @@ class Song {
     return this.duration;
   }
 
-  getMoves(index) {
-    return moves[index];
+  // Return instruction Id as a posivite value and -1 if there is no new instruction id.
+  getNewInstructionId() {
+    let timeElapsed = Date.now() - this.startTime;
+    if (timeElapsed < this.delay)
+      return -1;  // Instructions are not available yet.
+    let index = Math.floor((timeElapsed - this.delay) / this.tempo);
+    if (index >= this.instructionIds.length)
+      return -1;  // End of song has been reached, there is no more instruction to return.
+
+    // If index already used, do not return the new instruction ID.
+    if (index == this.lastInstructionIdIndex)
+      return -1;
+    this.lastInstructionIdIndex = index;
+    return this.instructionIds[index];
   }
 
-  play(){
-    this.file.play();
+  getTotalNumberOfInstructions() {
+    return this.total;
+  }
+
+  increaseProgress() {
+    this.progress++;
+  }
+
+  getProgress() {
+    return this.progress;
   }
 }
 
 function setupSongs() {
-  songs.push(new Song(ymcaFile, ymcaDelay, ymcaTempo, ymcaDuration, ymcaMoves));
+  songs.push(new Song(ymcaFile, ymcaDelay, ymcaTempo, ymcaDuration, ymcaInstructionIds));
 }

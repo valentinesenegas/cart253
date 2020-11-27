@@ -1,15 +1,15 @@
 "use strict";
 
-// Index constants for our instructions.
-let noInstruction = -1;
-let instructionPunchLeftDanceMove = 0;
-let instructionClapLeftDanceMove = 1;
-let instructionPointLeftDanceMove = 2;
-let instructionAccordionDanceMove = 3;
-let instructionSplitDanceMove = 4;
-let instructionPointRightDanceMove = 5;
-let instructionClapRightDanceMove = 6;
-let instructionPunchRightDanceMove = 7;
+// ID constants for our instructions.
+let noInstructionId = -1;
+let instructionPunchLeftId = 0;
+let instructionClapLeftId = 1;
+let instructionPointLeftId = 2;
+let instructionAccordionId = 3;
+let instructionSplitId = 4;
+let instructionPointRightId = 5;
+let instructionClapRightId = 6;
+let instructionPunchRightId = 7;
 
 // Number of instructions
 let maxInstructions = 8;
@@ -33,10 +33,10 @@ function preloadInstructions() {
 }
 
 class Instruction {
-  constructor(imgInstruction, instructionIndex) {
+  constructor(imgInstruction, instructionId) {
     this.img = imgInstruction;
-    this.instructionIndex = instructionIndex;
-    this.startX = (instructionIndex < (maxInstructions / 2) ? instructionIndex * 87 + 10 : instructionIndex * 87 + 555);
+    this.instructionId = instructionId;
+    this.startX = (instructionId < (maxInstructions / 2) ? instructionId * 87 + 10 : instructionId * 87 + 555);
     this.startY = 150;
     this.offsetY = 0;
     this.speedY = 2;
@@ -56,13 +56,17 @@ class Instruction {
     return this.offsetY >= this.limitY;
   }
 
-  getInstructionIndex() {
-    return this.instructionIndex;
+  getInstructionId() {
+    return this.instructionId;
   }
 
 } // End of Instruction class
 
 function createRandomInstruction() {
-  let instructionIndex = Math.floor(random() * maxInstructions);
-  return new Instruction(instructionImages[instructionIndex], instructionIndex);
+  let instructionId = Math.floor(random() * maxInstructions);
+  return new Instruction(instructionImages[instructionId], instructionId);
+}
+
+function createInstructionFromId(instructionId) {
+  return new Instruction(instructionImages[instructionId], instructionId);
 }

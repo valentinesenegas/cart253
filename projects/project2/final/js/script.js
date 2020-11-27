@@ -38,8 +38,6 @@ let feedbacks = [];
 let missedMessages = ["ZERO!", "WRONG!", "WEAK!", "REALLY BAD!", "LOSER!", "HORRIBLE!"];
 let hitMessages = ["YUUUGE!", "SO SMART!", "TOUGH MOVE!", "CLASSY!", "TREMENDOUS!", "GREAT!"];
 
-// Game progress
-let gameProgress = 0;
 
 // Current song.
 let currentSong;
@@ -80,7 +78,7 @@ function setup() {
   setupScore();
   setupSongs();
 
-  atRestDanceMove = new AtRestDanceMove(noInstruction);  // -1 = not associated with an instruction.
+  atRestDanceMove = new AtRestDanceMove(noInstructionId);  // -1 = not associated with an instruction.
   currentDanceMove = atRestDanceMove;
 
   // Get first song.
@@ -96,6 +94,11 @@ function draw() {
   // Place the background image
   image(bg, 0, 0);
 
+  //temporary
+  // If the B key is pressed, start song.
+  if (keyIsDown(66))
+    song.play();
+
   // Get new dance move as input by the user.
   let newDanceMove;
   newDanceMove = createDanceMoveFromInput();
@@ -106,16 +109,20 @@ function draw() {
     // If current dance move is finished and is not associated with an instruction then
     // it means the user input a dance move at the wrong time (i.e. no associated instruction).
      if (currentDanceMove.isFinished()) {
-      if (currentDanceMove.getInstructionIndex() != noInstruction)
-        feedbacks.push(new IncorrectFeedback(currentDanceMove.getInstructionIndex()));
+      if (currentDanceMove.getInstructionId() != noInstructionId)
+        feedbacks.push(new IncorrectFeedback(currentDanceMove.getInstructionId()));
       currentDanceMove = atRestDanceMove;
     }
   }
   currentDanceMove.draw();
 
-  // Create random instructions
-  if (random() < 0.01)
-    instructions.push(createRandomInstruction());
+  // Get new instruction if available.
+  if (song != null) {
+    let newInstructionId = song.getNewInstructionId();
+    if (newInstructionId >= 0)
+        instructions.push(createInstructionFromId(newInstructionId));
+    drawProgress(song.getProgress(), song.getTotalNumberOfInstructions());
+  }
 
   // Draw instuctions
   let instruction;
@@ -127,16 +134,20 @@ function draw() {
   for (instruction = instructions.length - 1; instruction >= 0 ; instruction--) {
     if (instructions[instruction].hasReachedLimit()) {
 
-      if (currentDanceMove.verifyInstructionIndex(instructions[instruction].getInstructionIndex())) {
-        currentDanceMove.setInstructionIndex(noInstruction);
-        feedbacks.push(new HitFeedback(instructions[instruction].getInstructionIndex()));
+      if (currentDanceMove.verifyInstructionId(instructions[instruction].getInstructionId())) {
+        currentDanceMove.setInstructionId(noInstructionId);
+        if (song != null)
+          song.increaseProgress();
+          feedbacks.push(new HitFeedback(instructions[instruction].getInstructionId()));
         instructions.splice(instruction, 1);
         let message = Math.floor(Math.random() * hitMessages.length);
         addMessage(hitMessages[message]);
         hit();
       } else {
         // Remove instruction from the array.
-        feedbacks.push(new MissedFeedback(instructions[instruction].getInstructionIndex()));
+        if (song != null)
+          song.increaseProgress();
+        feedbacks.push(new MissedFeedback(instructions[instruction].getInstructionId()));
         instructions.splice(instruction, 1);
         let message = Math.floor(Math.random() * missedMessages.length);
         addMessage(missedMessages[message]);
@@ -157,8 +168,6 @@ function draw() {
   // Display messages, score and progress.
   drawMessages();
   drawScore();
-  drawProgress(Math.min(gameProgress, 400), 400);
-  gameProgress++;
 } // End of draw()
 
 

@@ -2,7 +2,7 @@
 
 let progressX = 300;
 let progressY = 860;
-let progressMaxW = 700;
+let progressMaxW = 600;
 let progressH = 20;
 let progressRadius = 20;
 
