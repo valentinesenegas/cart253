@@ -1,7 +1,7 @@
 "use strict;"
 
 let ymcaFile;
-let ymcaDelay = 1000;
+let ymcaCountdown = 5999;   // Countdown in milliseconds
 let ymcaTempo = (60 * 1000) / 96; //  beat per minute, converted to milliseconds per beat
 let ymcaDuration = 20000;
 let ymcaInstructionIds = [
@@ -33,9 +33,9 @@ function preloadSongs() {
 }
 
 class Song {
-  constructor(file, delay, tempo, duration, instructionIds) {
+  constructor(file, countdown, tempo, duration, instructionIds) {
     this.file = file;
-    this.delay = delay;
+    this.countdown = countdown;
     this.tempo = tempo;
     this.duration = duration;
     this.instructionIds = instructionIds;
@@ -58,8 +58,8 @@ class Song {
     this.startTime = Date.now();
   }
 
-  getDelay() {
-    return this.delay;
+  getCountdown() {
+    return this.countdown;
   }
 
   getTempo() {
@@ -73,9 +73,9 @@ class Song {
   // Return instruction Id as a posivite value and -1 if there is no new instruction id.
   getNewInstructionId() {
     let timeElapsed = Date.now() - this.startTime;
-    if (timeElapsed < this.delay)
+    if (timeElapsed < this.countdown)
       return -1;  // Instructions are not available yet.
-    let index = Math.floor((timeElapsed - this.delay) / this.tempo);
+    let index = Math.floor((timeElapsed - this.countdown) / this.tempo);
     if (index >= this.instructionIds.length)
       return -1;  // End of song has been reached, there is no more instruction to return.
 
@@ -100,5 +100,5 @@ class Song {
 }
 
 function setupSongs() {
-  songs.push(new Song(ymcaFile, ymcaDelay, ymcaTempo, ymcaDuration, ymcaInstructionIds));
+  songs.push(new Song(ymcaFile, ymcaCountdown, ymcaTempo, ymcaDuration, ymcaInstructionIds));
 }

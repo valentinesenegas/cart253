@@ -70,3 +70,9 @@ function createRandomInstruction() {
 function createInstructionFromId(instructionId) {
   return new Instruction(instructionImages[instructionId], instructionId);
 }
+
+function drawInstructions() {
+  let instruction;
+  for (instruction = 0; instruction < instructions.length; instruction++)
+    instructions[instruction].draw();
+}

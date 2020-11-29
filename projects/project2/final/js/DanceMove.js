@@ -29,6 +29,8 @@ let imgOpenHandBackLeft;
 let imgOpenHandFrontRight;
 let imgOpenHandBackRight;
 
+// The dance move for the rest position.
+let atRestDanceMove;
 
 // ---------- //
 // Preload the images and sounds
@@ -60,6 +62,14 @@ function preloadMoves() {
   imgOpenHandBackRight = loadImage("assets/images/openHandBack1.png");
 }
 
+function setupDanceMove() {
+  atRestDanceMove = new AtRestDanceMove(noInstructionId);  // -1 = not associated with an instruction.
+}
+
+function getRestDanceMove() {
+  return atRestDanceMove;
+}
+
 // ---------- //
 
 class DanceMove {
@@ -74,7 +84,7 @@ class DanceMove {
       this.timeToLive--;
   }
 
-  isFinished() {
+  isAnimationFinished() {
     return (this.timeToLive <= 0);
   }
 
@@ -215,6 +225,28 @@ class ClapRightDanceMove extends DanceMoveRight {
   }
 }
 
+// Arrow keys and their keyCodes
+let keyA = 65;
+let keyS = 83;
+let keyD = 68;
+let keyF = 70;
+
+let keyH = 72;
+let keyJ = 74;
+let keyK = 75;
+let keyL = 76;
+
+
+// USER INPUT with arrow keys
+let keyPressedA = false;
+let keyPressedS = false;
+let keyPressedD = false;
+let keyPressedF = false;
+let keyPressedH = false;
+let keyPressedJ = false;
+let keyPressedK = false;
+let keyPressedL = false;
+
 
 function createDanceMoveFromInput() {
   // Left side
@@ -253,4 +285,28 @@ function createDanceMoveFromInput() {
     return new PunchRightDanceMove(instructionPunchRightId);
   }
   return null;
+}
+
+
+function keyReleased() {
+  // Detect released keys.
+  // Left side
+  if (keyCode == keyA)
+    keyPressedA = false;
+  else if (keyCode == keyS)
+    keyPressedS = false;
+  else if (keyCode == keyD)
+    keyPressedD = false;
+  else if (keyCode == keyF)
+    keyPressedF = false;
+
+  // Right side
+  else if (keyCode == keyH)
+    keyPressedH = false;
+  else if (keyCode == keyJ)
+    keyPressedJ = false;
+  else if (keyCode == keyK)
+    keyPressedK = false;
+  else if (keyCode == keyL)
+    keyPressedL = false;
 }

@@ -4,11 +4,11 @@ let score = 0;
 let scoreX = 1090;
 let scoreY = 875;
 
-function hit() {
+function scoreHit() {
   score++;
 }
 
-function missed() {
+function scoreMissed() {
   score--;
 }
 

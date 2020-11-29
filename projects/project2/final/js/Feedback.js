@@ -1,5 +1,8 @@
 "use strict";
 
+// Feedback on hit, missed and incorrect moves.
+let feedbacks = [];
+
 class Feedback {
   constructor(instructionIndex) {
     this.instructionIndex = instructionIndex;
@@ -51,4 +54,28 @@ class IncorrectFeedback extends Feedback {
     line(this.x + 25, this.y + 85, this.x + 70, this.y + 35);
     pop();
   }
+}
+
+function drawFeedbacks() {
+  // Draw feedbacks
+  let feedback;
+  for (feedback = 0; feedback < feedbacks.length; feedback++)
+    feedbacks[feedback].draw();
+  for (feedback = feedbacks.length - 1; feedback >= 0; feedback--) {
+    if (feedbacks[feedback].hasReachedEndOfLife())
+      feedbacks.splice(feedback, 1);
+  }
+}
+
+
+function createFeedbackForIncorrectMove(instructionId) {
+  feedbacks.push(new IncorrectFeedback(instructionId));
+}
+
+function createFeedbackForHitMove(instructionId) {
+  feedbacks.push(new HitFeedback(instructionId));
+}
+
+function createFeedbackForMissedMove(instructionId) {
+  feedbacks.push(new MissedFeedback(instructionId));
 }
