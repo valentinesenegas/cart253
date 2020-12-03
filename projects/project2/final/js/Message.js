@@ -1,8 +1,5 @@
 "use strict;"
 
-let strokeText;
-let colorText;
-
 let messages = [];
 
 // Messages when missed or successful move
@@ -26,9 +23,9 @@ class Message {
     push();
     textSize(56);
     textAlign(CENTER, CENTER);
-    stroke(strokeText);
+    stroke(this.strokeText);
     strokeWeight(4);
-    fill(colorText);
+    fill(this.colorText);
     text(this.text, this.startX, this.startY + this.offsetY);
     this.offsetY += this.speedY;
     pop();
@@ -44,18 +41,15 @@ function addMessage(text, colorText, strokeText) {
 }
 
 function createMissedMessage() {
-  colorText = "#DD4E6C";
-  strokeText = "#A00828";
   let message = Math.floor(Math.random() * missedMessages.length);
-  addMessage(missedMessages[message]);
+  addMessage(missedMessages[message], "#DD4E6C", "#A00828");
 }
 
 function createHitMessage() {
   colorText = "#144490";
   strokeText = "#002868";
   let message = Math.floor(Math.random() * hitMessages.length);
-  addMessage(hitMessages[message]);
-
+  addMessage(hitMessages[message], "#144490", "#002868");
 }
 
 function drawMessages() {

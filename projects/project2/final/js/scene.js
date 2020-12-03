@@ -19,7 +19,6 @@ function preloadScene() {
 }
 
 
-
 function setupScene() {
   createCanvas(1267, 900);
   textFont(allanBold);
