@@ -7,12 +7,6 @@ Valentine Sénégas
 Make the president dance!
 **************************************************/
 
-let stateHome = 1;
-let stateGame = 2;
-
-// State of the game: can be title, song1,... endWin, endLose
-let state = stateHome;
-
 
 //*********************************************************************
 //
@@ -50,15 +44,15 @@ function setup() {
 
 // Description of draw() goes here.
 function draw() {
-  if (state == stateHome)
-    drawHome();
-  // Game is started.
-  else {
-    // Handle game logic.
-    handleGameLogic();
+  if (isGameStarted())
+  {
+   // Handle game logic.
+   handleGameLogic();
 
-    // Display feedbacks, messages, score and progress.
-    // Draw instuctions
-    drawGame();
-  }
+   // Display feedbacks, messages, score and progress.
+   // Draw instuctions
+   drawGame();
+ }
+  else
+    drawHome();
 } // End of draw()

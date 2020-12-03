@@ -12,25 +12,28 @@ Make the president dance!
 // Dance moves
 let currentDanceMove = null;
 
-
 // Instructions
 let instructions = [];
 
-
 // Current song.
-let currentSong;
+let currentSongId;
 let song = null;
-
 
 // Setup of the score, creation of the canvas, apply the main font for the text
 function setupGame() {
   currentDanceMove = getRestDanceMove();
-
-  // Get first song.
-  currentSong = 0;
-  song = getSong(currentSong);
 }
 
+function isGameStarted() {
+  return (song != null);
+}
+
+function startGame(songId) {
+  currentSongId = songId;
+  song = getSong(currentSongId);
+  resetCountdown(song.getCountdown());
+  song.play();
+}
 
 //*********************************************************************
 //
