@@ -1,6 +1,6 @@
 "use strict";
 
-
+// Creation of canvas, background, prealoading fonts.
 // ---------- //
 let bg;
 
@@ -11,7 +11,7 @@ let openSansRegular;
 
 
 function preloadScene() {
-  // Google Font: Allan
+  // Google Fonts: Allan and Open Sans
   allanBold = loadFont("assets/fonts/Allan-Bold.ttf");
   allanRegular = loadFont("assets/fonts/Allan-Regular.ttf");
   openSansRegular = loadFont("assets/fonts/OpenSans-Regular.ttf");
@@ -28,7 +28,7 @@ function setupScene() {
 
 
 function drawScene() {
-  // Place the background image
+  // Place the background image.
   image(bg, 0, 0);
 
 }
