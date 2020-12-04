@@ -60,3 +60,8 @@ function drawMessages() {
       messages.splice(message, 1);
   }
 }
+
+function resetMessages() {
+  while (messages.length > 0)
+    messages.splice(0, 1);    // Remove message from array.
+}

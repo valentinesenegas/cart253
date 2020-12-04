@@ -58,6 +58,13 @@ class Song {
     this.startTime = Date.now();
   }
 
+  stop(){
+    this.file.stop();
+    this.startTime = 0;
+    this.lastInstructionIdIndex = -1;
+    this.progress = 0;
+  }
+
   getCountdown() {
     return this.countdown;
   }

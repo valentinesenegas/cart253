@@ -19,6 +19,36 @@ let instructions = [];
 let currentSongId;
 let song = null;
 
+// Images for replay and exit buttons.
+let imgReplayButtonReleased;
+let imgReplayButtonHover;
+let imgReplayButtonPressed;
+
+let imgExitButtonReleased;
+let imgExitButtonHover;
+let imgExitButtonPressed;
+
+let imgLastPressedReplayButton = null;
+let imgLastPressedExitButton = null;
+
+let replayButtonX = 100;
+let exitButtonX = 160;
+let controlButtonsY = 800;
+let controlButtonsW = 42;
+let controlButtonsH = 42;
+
+
+function preloadGame() {
+  // Replay and exit buttons
+  imgReplayButtonReleased = loadImage("assets/images/buttons/replayReleased.png");
+  imgReplayButtonHover = loadImage("assets/images/buttons/replayHover.png");
+  imgReplayButtonPressed = loadImage("assets/images/buttons/replayPressed.png");
+
+  imgExitButtonReleased = loadImage("assets/images/buttons/exitReleased.png");
+  imgExitButtonHover = loadImage("assets/images/buttons/exitHover.png");
+  imgExitButtonPressed = loadImage("assets/images/buttons/exitPressed.png");
+}
+
 // Setup of the score, creation of the canvas, apply the main font for the text
 function setupGame() {
   currentDanceMove = getRestDanceMove();
@@ -29,10 +59,68 @@ function isGameStarted() {
 }
 
 function startGame(songId) {
+  resetInstructions();
+  resetMessages();
   currentSongId = songId;
+  if (song != null)
+    song.stop();
   song = getSong(currentSongId);
   resetCountdown(song.getCountdown());
   song.play();
+  resetScore();
+}
+
+function stopGame() {
+  resetInstructions();
+  resetMessages();
+  if (song != null)
+    song.stop();
+  song = null;
+}
+
+//*********************************************************************
+//
+//                        B U T T O N S
+//
+//*********************************************************************
+
+function drawControlButtons() {
+
+// Replay button
+  let imgReplay = imgReplayButtonReleased;
+  if (mouseX >= replayButtonX && mouseX <= replayButtonX + controlButtonsW &&
+      mouseY >= controlButtonsY && mouseY <= controlButtonsY + controlButtonsH) {
+    if (mouseIsPressed)
+      imgReplay = imgReplayButtonPressed;
+    else if (imgLastPressedReplayButton == imgReplayButtonPressed)
+      startGame(currentSongId);
+    else
+      imgReplay = imgReplayButtonHover;
+  }
+  imgLastPressedReplayButton = imgReplay;
+
+  push();
+  imageMode(CORNER);
+  image(imgReplay, replayButtonX, controlButtonsY);
+  pop();
+
+  // Exit button
+    let imgExit = imgExitButtonReleased;
+    if (mouseX >= exitButtonX && mouseX <= exitButtonX + controlButtonsW &&
+        mouseY >= controlButtonsY && mouseY <= controlButtonsY + controlButtonsH) {
+      if (mouseIsPressed)
+        imgExit = imgExitButtonPressed;
+      else if (imgLastPressedExitButton == imgExitButtonPressed)
+        stopGame();
+      else
+        imgExit = imgExitButtonHover;
+    }
+    imgLastPressedExitButton = imgExit;
+
+    push();
+    imageMode(CORNER);
+    image(imgExit, exitButtonX, controlButtonsY);
+    pop();
 }
 
 //*********************************************************************
@@ -65,6 +153,7 @@ function drawGame() {
   drawMessages();
   drawScore();
   drawCountdown();
+  drawControlButtons();
 } // End of draw()
 
 

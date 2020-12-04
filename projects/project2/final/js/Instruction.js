@@ -76,3 +76,8 @@ function drawInstructions() {
   for (instruction = 0; instruction < instructions.length; instruction++)
     instructions[instruction].draw();
 }
+
+function resetInstructions() {
+  while (instructions.length > 0)
+    instructions.splice(0, 1);    // Remove instruction from array.
+}

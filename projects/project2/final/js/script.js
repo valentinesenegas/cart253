@@ -22,13 +22,13 @@ function preload() {
   preloadMoves();
   preloadInstructions();
   preloadSongs();
+  preloadGame();
   preloadHome();
 }
 
 // Setup of the score, creation of the canvas, apply the main font for the text
 function setup() {
   setupScene();
-  setupScore();
   setupSongs();
   setupDanceMove();
   setupGame();

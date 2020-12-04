@@ -6,7 +6,7 @@ Home screen with the map
 
 let rgba = 0;     // Last RGBA of the pixel pointed by the mouse.
 
-// Display state of the regions
+// Display state of the regions.
 let normal = 0;
 let hover = 1;
 let selected = 2;
@@ -22,6 +22,7 @@ let regionNormalColors = [193, 248, 254, 194, 215];
 let regionHoverColors = [143, 240, 237, 170, 162];
 let currentSelectedRegionId = -1;   // No selected region.
 
+// In each region, rectangle that is always clickable, even when the color is not the color of the region.
 let regionRects =
   [
     [177, 294, 430, 413],
@@ -37,20 +38,23 @@ let imgStartButtonHover;
 let imgStartButtonPressed;
 let imgLastStartButton = null;
 
+// Position and size of the Start button.
 let startButtonX = 1000;
-let startButtonY = 600;
-let startButtonW = 150;
+let startButtonY = 800;
+let startButtonW = 225;
 let startButtonH = 50;
 
-// Stars.
+// Stars indicating level of difficulty.
 let imgStar1;
 let imgStar2;
 let imgStar3;
-let starX = 60;
-let star1Y = 700;
-let star2Y = 750;
-let star3Y = 800;
+let starX = 40;
+let star1Y = 720;
+let star2Y = 770;
+let star3Y = 820;
 let imgDifficulty = [];
+
+let imgBackgroundHome;
 
 
 //*********************************************************************
@@ -60,8 +64,11 @@ let imgDifficulty = [];
 //*********************************************************************
 
 
-// Preload the images, sounds, fonts
+// Preload the images, sounds.
 function preloadHome() {
+  // Background image
+  imgBackgroundHome = loadImage("assets/images/backgroundhome.png");
+
   // Regions.
   let regionId;
   for (regionId = 0; regionId < regionNames.length; regionId++) {
@@ -84,7 +91,6 @@ function preloadHome() {
   imgDifficulty.push(imgStar3);
 }
 
-// Setup of the score, creation of the canvas, apply the main font for the text
 function setupHome() {
   let regionId;
   for (regionId = 0; regionId < regionNames.length; regionId++)
@@ -99,7 +105,6 @@ function setupHome() {
 //*********************************************************************
 
 let regions = [];
-
 
 class Region {
   constructor (id, imgNormal, imgHover, imgSelected) {
@@ -149,7 +154,7 @@ function drawRegions() {
   for (regionId = 0; regionId < regionNames.length; regionId++)
     regions[regionId].draw();
 
-  // Draw the current selected region above the others
+  // Draw the current selected region above the others.
   if (currentSelectedRegionId != -1)
     regions[currentSelectedRegionId].draw();
 }
@@ -162,6 +167,7 @@ function drawRegions() {
 
 function drawStartButton() {
   let img = imgStartButtonReleased;
+
   if (mouseX >= startButtonX && mouseX <= startButtonX + startButtonW &&
       mouseY >= startButtonY && mouseY <= startButtonY + startButtonH) {
     if (mouseIsPressed)
@@ -194,6 +200,7 @@ function drawStartButton() {
 //
 //*********************************************************************
 
+// Starts indicating the level of difficulty of each region.
 function drawStars() {
   let img = imgStartButtonReleased;
   if (mouseX >= startButtonX && mouseX <= startButtonX + startButtonW &&
@@ -213,11 +220,12 @@ function drawStars() {
   image(imgStar1, starX, star1Y);
   image(imgStar2, starX, star2Y);
   image(imgStar3, starX, star3Y);
-  textSize(36);
+  textSize(24);
+  textFont(openSansRegular);
   textAlign(LEFT, CENTER);
-  text("Easy",      starX + 200, star1Y + 22);
-  text("Medium",    starX + 200, star2Y + 22);
-  text("Difficult", starX + 200, star3Y + 22);
+  text("Easy",      starX + 180, star1Y + 22);
+  text("Medium",    starX + 180, star2Y + 22);
+  text("Difficult", starX + 180, star3Y + 22);
   pop();
 }
 
@@ -228,15 +236,18 @@ function drawStars() {
 //
 //*********************************************************************
 
-// Description of draw() goes here.
+
 function drawHome() {
   rgba = get(mouseX, mouseY);
   background(241,242,252);
+  image(imgBackgroundHome, 0, 0);
   drawRegions();
   drawStars();
   drawStartButton();
 
+  // For testing purposes only.
   push();
+  textFont(openSansRegular);
   text("R:" + rgba[0] + " G:" + rgba[1] + " B:" + rgba[2] + " A:" + rgba[3], 100, 100);
   text("X:" + mouseX + " Y:" + mouseY, 100, 150);
   pop();

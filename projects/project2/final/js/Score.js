@@ -22,6 +22,6 @@ function drawScore() {
   pop();
 }
 
-function setupScore() {
+function resetScore() {
   score = 0;
 }
