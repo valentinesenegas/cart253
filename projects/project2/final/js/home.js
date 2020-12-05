@@ -17,7 +17,7 @@ let imgHoverArray = [];
 let imgSelectedArray = [];
 
 let regionNames = ["northwest", "midwest" , "northeast" , "southwest" , "southeast"];
-let regionDifficulty = [1, 2, 3, 1, 2];
+let regionDifficulty = [1, 2, 1, 3, 2];
 let regionNormalColors = [193, 248, 254, 194, 215];
 let regionHoverColors = [143, 240, 237, 170, 162];
 let currentSelectedRegionId = -1;   // No selected region.
@@ -232,23 +232,81 @@ function drawStars() {
 
 //*********************************************************************
 //
+//                      B A C K G R O U N D
+//
+//*********************************************************************
+
+function drawBackground() {
+  background(241,242,252);
+  image(imgBackgroundHome, 0, 0);
+}
+
+
+//*********************************************************************
+//
+//               L A S T   &   R E G I O N   S C O R E S
+//
+//*********************************************************************
+
+function drawLastAndRegionScores() {
+  // Draw last score.
+  let lastScoreMax = getScoreMax();
+  if (lastScoreMax == 0) {
+    push();
+    textSize(40);
+    textAlign(LEFT, CENTER);
+    text("Select a region and press START", 400, 100);
+    pop();
+  }
+  else {
+    push();
+    textSize(40);
+    textAlign(CENTER);
+    text("Last Score", 600, 65);
+    text("Incorrect moves: " + getScoreIncorrectMoves(), 600, 250);
+    pop();
+    drawScorePercentHit(getScorePercentHit(), 600, 140, scorePercentDiameterLarge, 32);
+  }
+
+  // Draw region scores.
+  let regionId;
+  for (regionId = 0; regionId < regionNames.length; regionId++) {
+    let song = getSong(regionId);
+    let scorePercentHit = song.getPercentScoreHit();
+    if (scorePercentHit != -1) {
+      push();
+      textSize(16);
+      textAlign(LEFT, CENTER);
+      text("Incorrect moves: " + getScoreIncorrectMoves(), regionRects[regionId][0], regionRects[regionId][1] + 50);
+      pop();
+      drawScorePercentHit(scorePercentHit, regionRects[regionId][0] + 120, regionRects[regionId][1] + 80, scorePercentDiameterSmall, 16);
+    }
+  }
+}
+
+//*********************************************************************
+//
 //                             D R A W
 //
 //*********************************************************************
 
 
 function drawHome() {
+  // BEGIN - For testing purposes only.
   rgba = get(mouseX, mouseY);
-  background(241,242,252);
-  image(imgBackgroundHome, 0, 0);
+  // END - For testing purposes only.
+
+  drawBackground();
   drawRegions();
   drawStars();
   drawStartButton();
+  drawLastAndRegionScores();
 
-  // For testing purposes only.
-  push();
-  textFont(openSansRegular);
-  text("R:" + rgba[0] + " G:" + rgba[1] + " B:" + rgba[2] + " A:" + rgba[3], 100, 100);
-  text("X:" + mouseX + " Y:" + mouseY, 100, 150);
-  pop();
+  // BEGIN - For testing purposes only.
+  // push();
+  // textFont(openSansRegular);
+  // text("R:" + rgba[0] + " G:" + rgba[1] + " B:" + rgba[2] + " A:" + rgba[3], 100, 100);
+  // text("X:" + mouseX + " Y:" + mouseY, 100, 150);
+  // pop();
+  // END - For testing purposes only.
 } // End of drawHome()

@@ -18,6 +18,8 @@ let instructions = [];
 // Current song.
 let currentSongId;
 let song = null;
+let waitAfterEndOfGame = 150; // FPS, example 300 = 5 seconds * 60 fps
+let waitTimeoutAfterEndOfGame;
 
 // Images for replay and exit buttons.
 let imgReplayButtonReleased;
@@ -59,15 +61,12 @@ function isGameStarted() {
 }
 
 function startGame(songId) {
-  resetInstructions();
-  resetMessages();
   currentSongId = songId;
-  if (song != null)
-    song.stop();
   song = getSong(currentSongId);
-  resetCountdown(song.getCountdown());
   song.play();
-  resetScore();
+  resetCountdown(song.getCountdown());
+  resetScore(song.getTotalNumberOfInstructions());
+  waitTimeoutAfterEndOfGame = waitAfterEndOfGame;
 }
 
 function stopGame() {
@@ -92,8 +91,10 @@ function drawControlButtons() {
       mouseY >= controlButtonsY && mouseY <= controlButtonsY + controlButtonsH) {
     if (mouseIsPressed)
       imgReplay = imgReplayButtonPressed;
-    else if (imgLastPressedReplayButton == imgReplayButtonPressed)
+    else if (imgLastPressedReplayButton == imgReplayButtonPressed) {
+      stopGame();
       startGame(currentSongId);
+    }
     else
       imgReplay = imgReplayButtonHover;
   }
@@ -110,8 +111,10 @@ function drawControlButtons() {
         mouseY >= controlButtonsY && mouseY <= controlButtonsY + controlButtonsH) {
       if (mouseIsPressed)
         imgExit = imgExitButtonPressed;
-      else if (imgLastPressedExitButton == imgExitButtonPressed)
+      else if (imgLastPressedExitButton == imgExitButtonPressed) {
         stopGame();
+        resetScore(0);
+      }
       else
         imgExit = imgExitButtonHover;
     }
@@ -169,8 +172,10 @@ function checkForNewDanceMoveFromUserInput() {
   // If current dance move is finished and is not associated with an instruction Id then
   // it means the user input a dance move at the wrong time (i.e. no associated instruction).
   if (currentDanceMove.isAnimationFinished()) {
-    if (currentDanceMove.getInstructionId() != noInstructionId)
+    if (currentDanceMove.getInstructionId() != noInstructionId) {
+      scoreIncorrectMove();
       createFeedbackForIncorrectMove(currentDanceMove.getInstructionId());
+    }
     currentDanceMove = getRestDanceMove();
   }
 
@@ -179,8 +184,10 @@ function checkForNewDanceMoveFromUserInput() {
   let newDanceMove;
   newDanceMove = createDanceMoveFromInput();
   if (newDanceMove != null) {
-    if (currentDanceMove.getInstructionId() != noInstructionId)
+    if (currentDanceMove.getInstructionId() != noInstructionId) {
+      scoreIncorrectMove();
       createFeedbackForIncorrectMove(currentDanceMove.getInstructionId());
+    }
     currentDanceMove = newDanceMove;
   }
 }
@@ -195,6 +202,19 @@ function checkForNewInstruction() {
   let newInstructionId = song.getNewInstructionId();
   if (newInstructionId >= 0)
       instructions.push(createInstructionFromId(newInstructionId));
+}
+
+// End of game.
+function checkForEndOfGame() {
+  // If all instructions were used and were removed from the array of instructions, then the game has ended.
+  if (song.getProgress() == song.getTotalNumberOfInstructions() && instructions.length == 0) {
+    if (waitTimeoutAfterEndOfGame == 0) {
+      song.setScore(getScorePercentHit(), getScoreIncorrectMoves());
+      stopGame();
+    }
+    else
+      waitTimeoutAfterEndOfGame--;
+  }
 }
 
 // Destroy the instruction once it has reached the limit
@@ -212,7 +232,7 @@ function checkForInstructionsToRemove() {
         createFeedbackForHitMove(instructions[instruction].getInstructionId());
         instructions.splice(instruction, 1);    // Remove instruction from array.
         createHitMessage();
-        scoreHit();   // Update score.
+        scoreHitMove();   // Update score.
       } else {
         // Missed instruction
         // Remove instruction from the array.
@@ -221,21 +241,15 @@ function checkForInstructionsToRemove() {
         createFeedbackForMissedMove(instructions[instruction].getInstructionId());
         instructions.splice(instruction, 1);    // Remove instruction from array.
         createMissedMessage();
-        scoreMissed();  // Update score.
+        scoreMissedMove();  // Update score.
       }
     }
   }
 }
 
 function handleGameLogic() {
-    //temporary
-    // If the B key is pressed, start song.
-    if (keyIsDown(66)) {
-      resetCountdown(song.getCountdown());
-      song.play();
-    }
-
   checkForNewDanceMoveFromUserInput();    // Get new dance move as input by the user.
   checkForNewInstruction();               // Get new instruction if available.
   checkForInstructionsToRemove();         // Remove instructions that reached their end of file and check for hit/miss.
+  checkForEndOfGame();
 }

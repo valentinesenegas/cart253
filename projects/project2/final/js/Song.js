@@ -1,8 +1,9 @@
 "use strict;"
 
 let ymcaFile;
-let ymcaCountdown = 5999;   // Countdown in milliseconds
-let ymcaTempo = (60 * 1000) / 96; //  beat per minute, converted to milliseconds per beat
+//let ymcaCountdown = 5999;   // Countdown in milliseconds
+let ymcaCountdown = 2999;   // Countdown in milliseconds
+let ymcaTempo = (60 * 1000) / 192; //  beat per minute, converted to milliseconds per beat
 let ymcaDuration = 20000;
 let ymcaInstructionIds = [
     // Intro
@@ -44,6 +45,8 @@ class Song {
     this.lastInstructionIdIndex = -1;
     this.total = 0;
     this.progress = 0;
+    this.percentScoreHit = -1;   // -1 = no score yet for this song.
+    this.incorrectMoves = 0;
 
     // Determine the total number of instructions.
     let index;
@@ -52,17 +55,30 @@ class Song {
         this.total++;
   }
 
-  play(){
+  play() {
     this.file.play();
     this.lastInstructionIdIndex = -1;
     this.startTime = Date.now();
   }
 
-  stop(){
+  stop(percentScoreHit, incorrectMoves) {
     this.file.stop();
     this.startTime = 0;
     this.lastInstructionIdIndex = -1;
     this.progress = 0;
+  }
+
+  setScore(percentScoreHit, incorrectMoves) {
+    this.percentScoreHit = percentScoreHit;
+    this.incorrectMoves = incorrectMoves;
+  }
+
+  getPercentScoreHit() {
+    return this.percentScoreHit;
+  }
+
+  getIncorrectMoves() {
+    return this.incorrectMoves;
   }
 
   getCountdown() {
