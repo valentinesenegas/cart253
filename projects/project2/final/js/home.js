@@ -16,17 +16,17 @@ let imgNormalArray = [];
 let imgHoverArray = [];
 let imgSelectedArray = [];
 
-let regionNames = ["northwest", "midwest" , "northeast" , "southwest" , "southeast"];
-let regionDifficulty = [1, 2, 1, 3, 2];
-let regionNormalColors = [193, 248, 254, 194, 215];
-let regionHoverColors = [143, 240, 237, 170, 162];
+let regionNames = ["northwest", "northeast" , "southwest" , "southeast"];
+let regionDifficulty = [1, 2, 1, 3];
+let regionNormalColors = [193, 254, 194, 215]; // RGB. G: value
+let regionHoverColors = [143, 237, 170, 162];
 let currentSelectedRegionId = -1;   // No selected region.
 
 // In each region, rectangle that is always clickable, even when the color is not the color of the region.
 let regionRects =
   [
     [177, 294, 430, 413],
-    [485, 308, 675, 465],
+    // [485, 308, 675, 465],
     [779, 448, 949, 537],
     [157, 476, 332, 583],
     [507, 594, 727, 703]

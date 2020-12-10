@@ -24,7 +24,7 @@ class HitFeedback extends Feedback {
   draw() {
     super.draw();
     push();
-    stroke('green');
+    stroke('#A9ED91');
     strokeWeight(10);
     noFill();
     ellipse(this.x + 50, this.y + 56, 67);
@@ -48,7 +48,7 @@ class IncorrectFeedback extends Feedback {
   draw() {
     super.draw();
     push();
-    stroke('red');
+    stroke('#BF0A30');
     strokeWeight(10);
     line(this.x + 25, this.y + 35, this.x + 70, this.y + 85);
     line(this.x + 25, this.y + 85, this.x + 70, this.y + 35);

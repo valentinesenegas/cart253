@@ -7,27 +7,48 @@
 let imgAtRest;
 
 // Split
-let imgSplit;
+let imgSplit1;
+let imgSplit2;
+let imgSplit3;
 
 // Accordion
-let imgAccordion;
+let imgAccordion1;
+let imgAccordion2;
+let imgAccordion3;
 
 // pointLeft & pointRight
-let imgPointLeft;
-let imgPointRight;
+let imgPointLeft1;
+let imgPointLeft2;
+let imgPointRight1;
+let imgPointRight2;
 let imgRightArmNormal;
 
 // punchLeft & punchRight
-let imgClenchedFistFrontLeft;
-let imgClenchedFistBackLeft;
-let imgClenchedFistFrontRight;
-let imgClenchedFistBackRight;
+// Left
+let imgClenchedFistFrontLeft1;
+let imgClenchedFistBackLeft1;
+let imgClenchedFistFrontLeft2;
+let imgClenchedFistBackLeft2;
+// Right
+let imgClenchedFistFrontRight1;
+let imgClenchedFistBackRight1;
+let imgClenchedFistFrontRight2;
+let imgClenchedFistBackRight2;
 
 // clapLeft & clapRight
-let imgOpenHandFrontLeft;
-let imgOpenHandBackLeft;
-let imgOpenHandFrontRight;
-let imgOpenHandBackRight;
+let imgOpenHandFrontLeft1;
+let imgOpenHandBackLeft1;
+let imgOpenHandFrontLeft2;
+let imgOpenHandBackLeft2;
+
+let imgOpenHandFrontRight1;
+let imgOpenHandBackRight1;
+let imgOpenHandFrontRight2;
+let imgOpenHandBackRight2;
+
+// Left and right dance move.
+let leftDanceMove = 1;
+let rightDanceMove = 2;
 
 // The dance move for the rest position.
 let atRestDanceMove;
@@ -39,27 +60,44 @@ function preloadMoves() {
   imgAtRest = loadImage("assets/images/at-rest.png");
 
   // Split
-  imgSplit = loadImage("assets/images/split.png");
+  imgSplit1 = loadImage("assets/images/split1.png");
+  imgSplit2 = loadImage("assets/images/split2.png");
+  imgSplit3 = loadImage("assets/images/split3.png");
 
   // Accordion
-  imgAccordion = loadImage("assets/images/accordion.png");
+  imgAccordion1 = loadImage("assets/images/accordion.png");
+  imgAccordion2 = loadImage("assets/images/accordion2.png");
+  imgAccordion3 = loadImage("assets/images/accordion3.png");
 
   // pointLeft & pointRight
-  imgPointLeft = loadImage("assets/images/pointLeft.png");
-  imgPointRight = loadImage("assets/images/pointRight1.png");
+  imgPointLeft1 = loadImage("assets/images/pointLeft1.png");
+  imgPointLeft2 = loadImage("assets/images/pointLeft2.png");
+  imgPointRight1 = loadImage("assets/images/pointRight1.png");
+  imgPointRight2 = loadImage("assets/images/pointRight2.png");
   imgRightArmNormal = loadImage("assets/images/rightArmNormal.png");
 
   // punchLeft & punchRight
-  imgClenchedFistFrontLeft = loadImage("assets/images/clenchedFistFrontLeft.png");
-  imgClenchedFistBackLeft = loadImage("assets/images/clenchedFistBackLeft.png");
-  imgClenchedFistFrontRight = loadImage("assets/images/clenchedFistFront1.png");
-  imgClenchedFistBackRight = loadImage("assets/images/clenchedFistBack1.png");
+  // Left
+  imgClenchedFistFrontLeft1 = loadImage("assets/images/clenchedFistFrontLeft1.png");
+  imgClenchedFistBackLeft1 = loadImage("assets/images/clenchedFistBackLeft1.png");
+  imgClenchedFistFrontLeft2 = loadImage("assets/images/clenchedFistFrontLeft2.png");
+  imgClenchedFistBackLeft2 = loadImage("assets/images/clenchedFistBackLeft2.png");
+  // Right
+  imgClenchedFistFrontRight1 = loadImage("assets/images/clenchedFistFront1.png");
+  imgClenchedFistBackRight1 = loadImage("assets/images/clenchedFistBack1.png");
+  imgClenchedFistFrontRight2 = loadImage("assets/images/clenchedFistFrontRight2.png");
+  imgClenchedFistBackRight2 = loadImage("assets/images/clenchedFistBackRight2.png");
 
   // clapLeft & clapRight
-  imgOpenHandFrontLeft = loadImage("assets/images/openHandFrontLeft.png");
-  imgOpenHandBackLeft = loadImage("assets/images/openHandBackLeft.png");
-  imgOpenHandFrontRight = loadImage("assets/images/openHandFront1.png");
-  imgOpenHandBackRight = loadImage("assets/images/openHandBack1.png");
+  imgOpenHandFrontLeft1 = loadImage("assets/images/openHandFrontLeft.png");
+  imgOpenHandBackLeft1 = loadImage("assets/images/openHandBackLeft.png");
+  imgOpenHandFrontLeft2 = loadImage("assets/images/openHandFrontLeft2.png");
+  imgOpenHandBackLeft2 = loadImage("assets/images/openHandBackLeft2.png");
+
+  imgOpenHandFrontRight1 = loadImage("assets/images/openHandFront1.png");
+  imgOpenHandBackRight1 = loadImage("assets/images/openHandBack1.png");
+  imgOpenHandFrontRight2 = loadImage("assets/images/openHandFrontRight2.png");
+  imgOpenHandBackRight2 = loadImage("assets/images/openHandBackRight2.png");
 }
 
 function setupDanceMove() {
@@ -102,57 +140,50 @@ class DanceMove {
 }
 
 // Dance moves on the right sides (5 to 8) - JKL keys
-class DanceMoveRight extends DanceMove {
-  constructor(instructionId, imgBack, imgFront, backHandDX, backHandDY, frontHandDX, frontHandDY) {
+// Dance moves on the left sides (1 to 4) - ASD keys
+class BasicDanceMove extends DanceMove {
+  constructor(instructionId, leftOrRight,
+      imgBack1, imgFront1, backHandDX1, backHandDY1, frontHandDX1, frontHandDY1,
+      imgBack2, imgFront2, backHandDX2, backHandDY2, frontHandDX2, frontHandDY2) {
     super(instructionId);
-    this.imgBack = imgBack;
-    this.imgFront = imgFront;
+    this.leftOrRight = leftOrRight;
+    this.imgBack1 = imgBack1;
+    this.imgBack2 = imgBack2;
+    this.imgFront1 = imgFront1;
+    this.imgFront2 = imgFront2;
 
     // Offset for animations on the right side
-    this.backHandDX = backHandDX;
-    this.backHandDY = backHandDY;
-    this.frontHandDX = frontHandDX;
-    this.frontHandDY = frontHandDY;
+    this.backHandDX1 = backHandDX1;
+    this.backHandDY1 = backHandDY1;
+    this.frontHandDX1 = frontHandDX1;
+    this.frontHandDY1 = frontHandDY1;
+    this.backHandDX2 = backHandDX2;
+    this.backHandDY2 = backHandDY2;
+    this.frontHandDX2 = frontHandDX2;
+    this.frontHandDY2 = frontHandDY2;
   }
 
   draw() {
     push();
     imageMode(CORNER);
-    image(this.imgBack, this.character.getX() + this.backHandDX, this.character.getY() + this.backHandDY);
-    this.character.drawCharacterRight();
-    image(this.imgFront, this.character.getX() + this.frontHandDX, this.character.getY() + this.frontHandDY);
+    if (this.timeToLive >= 15)
+      image(this.imgBack1, this.character.getX() + this.backHandDX1, this.character.getY() + this.backHandDY1);
+    else
+      image(this.imgBack2, this.character.getX() + this.backHandDX2, this.character.getY() + this.backHandDY2);
+    if (this.leftOrRight == leftDanceMove)
+      this.character.drawCharacterLeft();
+    else
+      this.character.drawCharacterRight();
+    if (this.timeToLive >= 15)
+      image(this.imgFront1, this.character.getX() + this.frontHandDX1, this.character.getY() + this.frontHandDY1);
+    else
+      image(this.imgFront2, this.character.getX() + this.frontHandDX2, this.character.getY() + this.frontHandDY2);
     pop();
     super.draw();
   }
 }
 
-// Dance moves on the left sides (1 to 4) - ASD keys
-class DanceMoveLeft extends DanceMove {
-  constructor(instructionId, imgBack, imgFront, backHandDX, backHandDY, frontHandDX, frontHandDY) {
-    super(instructionId);
-    this.imgBack = imgBack;
-    this.imgFront = imgFront;
-
-    // Offset for animations on the left side
-    this.backHandDX = backHandDX;
-    this.backHandDY = backHandDY;
-    this.frontHandDX = frontHandDX;
-    this.frontHandDY = frontHandDY;
-  }
-
-  draw() {
-    push();
-    imageMode(CORNER);
-    image(this.imgBack, this.character.getX() + this.backHandDX, this.character.getY() + this.backHandDY);
-    this.character.drawCharacterLeft();
-    image(this.imgFront, this.character.getX() + this.frontHandDX, this.character.getY() + this.frontHandDY);
-    pop();
-    super.draw();
-  }
-}
-
-
-// Split
+// At Rest
 class AtRestDanceMove extends DanceMove {
   draw() {
     push();
@@ -165,10 +196,22 @@ class AtRestDanceMove extends DanceMove {
 
 // Split
 class SplitDanceMove extends DanceMove {
+  constructor(instructionId) {
+    super(instructionId);
+    this.timeToLive = 50;
+  }
+
   draw() {
     push();
     imageMode(CENTER);
-    image(imgSplit, this.character.getX(), this.character.getY() + 60);
+    if (this.timeToLive >= 40)
+      image(imgSplit1, this.character.getX(), this.character.getY());
+    else if (this.timeToLive >= 30)
+      image(imgSplit2, this.character.getX(), this.character.getY() + 10);
+    else if (this.timeToLive >= 10)
+      image(imgSplit3, this.character.getX(), this.character.getY() + 60 + 30 - this.timeToLive);
+    else
+      image(imgSplit3, this.character.getX(), this.character.getY() + 60 + 10);
     pop();
     super.draw();
   }
@@ -180,7 +223,13 @@ class AccordionDanceMove extends DanceMove {
     push();
     imageMode(CENTER);
     image(imgBodyCharacterLeft, this.character.getX(), this.character.getY());
-    image(imgAccordion, this.character.getX(), this.character.getY() + 50);
+
+    if (this.timeToLive >= 20)
+      image(imgAccordion1, this.character.getX(), this.character.getY() + 50);
+    else if (this.timeToLive >= 10)
+      image(imgAccordion2, this.character.getX(), this.character.getY() + 50);
+    else
+      image(imgAccordion3, this.character.getX(), this.character.getY() + 50);
     pop();
     super.draw();
   }
@@ -188,41 +237,141 @@ class AccordionDanceMove extends DanceMove {
 
 
 // pointLeft & pointRight
-class PointLeftDanceMove extends DanceMoveLeft {
-  constructor(instructionId) {
-    super(instructionId, imgClenchedFistBackLeft, imgPointLeft, -300, 0, -230, -100);
-  }
+class PointLeftDanceMove extends BasicDanceMove {
+   constructor(instructionId) {
+     super(instructionId, leftDanceMove,
+       imgClenchedFistBackLeft1, imgPointLeft1, -230,  -20, -230, -90,
+       imgClenchedFistBackLeft2, imgPointLeft2, -230, -10, -230, -30);
+   }
+  // draw() {
+  //   if (this.timeToLive >= 15)
+  //     image(imgClenchedFistBackLeft1, this.character.getX() - 300, this.character.getY() - 20);
+  //   else
+  //     image(imgClenchedFistBackLeft2, this.character.getX() - 300, this.character.getY() - 20);
+  //     this.character.drawCharacterLeft();
+  //   if (this.timeToLive >= 15)
+  //     image(imgPointLeft1, this.character.getX() - 230, this.character.getY() - 100);
+  //   else
+  //     image(imgPointLeft2, this.character.getX() - 230, this.character.getY() - 30);
+  //   super.draw();
+  // }
+
 }
-class PointRightDanceMove extends DanceMoveRight {
-  constructor(instructionId) {
-    super(instructionId, imgRightArmNormal, imgPointRight, -20, -50, -140, -100);
-  }
+class PointRightDanceMove extends BasicDanceMove {
+   constructor(instructionId) {
+     super(instructionId, rightDanceMove,
+     imgRightArmNormal, imgPointRight1, -50, -45, -150, -70,
+     imgRightArmNormal, imgPointRight2, -50, -45, -130, -30);
+   }
+  // draw() {
+  //   if (this.timeToLive >= 15)
+  //     image(imgRightArmNormal, this.character.getX() - 50, this.character.getY() - 40);
+  //   else
+  //     image(imgRightArmNormal, this.character.getX() - 50, this.character.getY() - 40);
+  //     this.character.drawCharacterRight();
+  //   if (this.timeToLive >= 15)
+  //     image(imgPointRight1, this.character.getX() - 130, this.character.getY() - 100);
+  //   else
+  //     image(imgPointRight2, this.character.getX() - 130, this.character.getY() - 30);
+  //   super.draw();
+  // }
 }
 
 
 // punchLeft & punchRight
-class PunchLeftDanceMove extends DanceMoveLeft {
+class PunchLeftDanceMove extends BasicDanceMove {
   constructor(instructionId) {
-    super(instructionId, imgClenchedFistBackLeft, imgClenchedFistFrontLeft, -300, -45, -75, -70);
+    super(instructionId, leftDanceMove,
+      imgClenchedFistBackLeft1, imgClenchedFistFrontLeft1, -300,  -45, -100, -45,
+      imgClenchedFistBackLeft2, imgClenchedFistFrontLeft2,  -215,  -70, -150, -70);
   }
+  // draw() {
+  //   push();
+  //   imageMode(CORNER);
+  //   if (this.timeToLive >= 15)
+  //     image(imgClenchedFistBackLeft1, this.character.getX() - 300, this.character.getY() - 45);
+  //   else
+  //     image(imgClenchedFistBackLeft2, this.character.getX() - 200, this.character.getY() - 45);
+  //   this.character.drawCharacterLeft();
+  //   if (this.timeToLive >= 15)
+  //     image(imgClenchedFistFrontLeft1, this.character.getX() - 75, this.character.getY() - 70);
+  //   else
+  //     image(imgClenchedFistFrontLeft2, this.character.getX() - 150, this.character.getY() - 70);
+  //   pop();
+  //   super.draw();
+  // }
 }
-class PunchRightDanceMove extends DanceMoveRight {
+class PunchRightDanceMove extends BasicDanceMove {
   constructor(instructionId) {
-    super(instructionId, imgClenchedFistBackRight, imgClenchedFistFrontRight, -10, -20, -110, -30);
+    super(instructionId, rightDanceMove,
+    imgClenchedFistBackRight1, imgClenchedFistFrontRight1,  -10, -20,  -110, -30,
+    imgClenchedFistBackRight2, imgClenchedFistFrontRight2, -110, -30, -110, -30);
   }
+  // draw() {
+  //   push();
+  //   imageMode(CORNER);
+  //   if (this.timeToLive >= 15)
+  //     image(imgClenchedFistBackRight1, this.character.getX() - 10, this.character.getY() - 20);
+  //   else
+  //     image(imgClenchedFistBackRight2, this.character.getX() - 10, this.character.getY() - 20);
+  //   this.character.drawCharacterRight();
+  //   if (this.timeToLive >= 15)
+  //     image(imgClenchedFistFrontRight1, this.character.getX() - 110, this.character.getY() - 30);
+  //   else
+  //     image(imgClenchedFistFrontRight2, this.character.getX() - 110, this.character.getY() - 30);
+  //   pop();
+  //   super.draw();
+  // }
 }
 
 
 // clapLeft & clapRight
-class ClapLeftDanceMove extends DanceMoveLeft {
+class ClapLeftDanceMove extends BasicDanceMove {
   constructor(instructionId) {
-    super(instructionId, imgOpenHandBackLeft, imgOpenHandFrontLeft, -200, -50, -160, -50);
+    super(instructionId, leftDanceMove,
+      imgOpenHandBackLeft1, imgOpenHandFrontLeft1, -200, -50, -200, -50,
+      imgOpenHandBackLeft2, imgOpenHandFrontLeft2, -160, -50, -160, -50);
   }
+  // draw() {
+  //   push();
+  //   imageMode(CORNER);
+  //   if (this.timeToLive >= 15)
+  //     image(imgOpenHandBackLeft1, this.character.getX() - 200, this.character.getY() - 50);
+  //   else
+  //     image(imgOpenHandBackLeft2, this.character.getX() - 200, this.character.getY() - 50);
+  //   this.character.drawCharacterRight();
+  //   if (this.timeToLive >= 15)
+  //     image(imgOpenHandFrontLeft1, this.character.getX() - 160, this.character.getY() - 50);
+  //   else
+  //     image(imgOpenHandFrontLeft2, this.character.getX() - 160, this.character.getY() - 50);
+  //   pop();
+  //   super.draw();
+  // }
 }
-class ClapRightDanceMove extends DanceMoveRight {
+class ClapRightDanceMove extends BasicDanceMove {
   constructor(instructionId) {
-    super(instructionId, imgOpenHandBackRight, imgOpenHandFrontRight, 10, -20, -130, -30);
+    super(instructionId, rightDanceMove,
+    imgOpenHandBackRight1, imgOpenHandFrontRight1,  +10, -50,  -130, -50,
+    imgOpenHandBackRight2, imgOpenHandFrontRight2, +30, -50, -130, -50);
   }
+  // constructor(instructionId) {
+  //   super(instructionId, imgOpenHandBackRight1, imgOpenHandFrontRight1, 10, -50, -130, -30);
+  // }
+  // draw() {
+  //   push();
+  //   imageMode(CORNER);
+  //   if (this.timeToLive >= 15)
+  //     image(imgOpenHandBackRight1, this.character.getX() + 10, this.character.getY() - 50);
+  //   else
+  //     image(imgOpenHandBackRight2, this.character.getX() + 10, this.character.getY() - 50);
+  //   this.character.drawCharacterRight();
+  //   if (this.timeToLive >= 15)
+  //     image(imgOpenHandFrontRight1, this.character.getX() - 130, this.character.getY() - 50);
+  //   else
+  //     image(imgOpenHandFrontRight2, this.character.getX() - 130, this.character.getY() - 50);
+  //   pop();
+  //   super.draw();
+  // }
 }
 
 // Arrow keys and their keyCodes

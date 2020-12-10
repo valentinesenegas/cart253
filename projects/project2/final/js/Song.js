@@ -1,16 +1,20 @@
 "use strict;"
 
-let ymcaFile;
-//let ymcaCountdown = 5999;   // Countdown in milliseconds
-let ymcaCountdown = 2999;   // Countdown in milliseconds
-let ymcaTempo = (60 * 1000) / 192; //  beat per minute, converted to milliseconds per beat
-let ymcaDuration = 20000;
-let ymcaInstructionIds = [
-    // Intro
-    0, 1, 2, 4, 6,
-
+// Hit the Road Jack
+let hitTheRoadJackFile;
+let hitTheRoadJackCountdown = 2599;   // Countdown in milliseconds
+let hitTheRoadJackTempo = (60 * 1000) / 86; // Beat per minute, converted to milliseconds per beat
+let hitTheRoadJackDuration = 20000;
+let hitTheRoadJackInstructionIds = [
     // First verse
-    0, 1, 2, 4, 5,
+    0, -1, 7, -1, 0, -1, 7, -1,
+
+    1, -1, 6, -1, 1, -1, 2,
+
+    // Second verse
+    0, -1, 7, -1, 0, -1, 7, -1,
+
+    1, -1, 6, -1, 1, -1, 2,
 
     // Chorus
     0, 1, 2, 4, 5,
@@ -22,6 +26,90 @@ let ymcaInstructionIds = [
     -1
   ];
 
+// -----------------------
+// YMCA
+let ymcaFile;
+//let ymcaCountdown = 5999;   // Countdown in milliseconds
+let ymcaCountdown = 7999;   // Countdown in milliseconds
+let ymcaTempo = (60 * 1000) / 142; // Beat per minute, converted to milliseconds per beat
+let ymcaDuration = 20000;
+let ymcaInstructionIds = [
+    // Intro
+    0, -1, 0, 7, -1, 7,
+
+    // First verse
+    0, -1, 1, -1, 6, -1, 1, -1, 6, -1,
+
+    // Chorus
+    2, -1, 5, -1, 5,
+
+    // There's no need to be
+    0, 1, 2, 4, 5,
+
+    // Unhappy
+    
+
+    // End of song.
+    -1
+  ];
+
+
+  // -----------------------
+  // Straight Outta Compton
+  let straightOuttaComptonFile;
+  let straightOuttaComptonCountdown = 6999;   // Countdown in milliseconds
+  let straightOuttaComptonTempo = (60 * 1000) / 102; // Beat per minute, converted to milliseconds per beat
+  let straightOuttaComptonDuration = 20000;
+  let straightOuttaComptonInstructionIds = [
+      // Intro
+      2, -1, 5, -1, 2, 4, 6,
+
+      // First verse
+      0, 1, 2, 4, 5,
+
+      // Chorus
+      0, 1, 2, 4, 5,
+
+      // First verse
+      0, 1, 2, 4, 5,
+
+      // End of song.
+      -1
+    ];
+
+  // -----------------------
+  // Cotton Eye Joe
+  let cottonEyeJoeFile;
+  let cottonEyeJoeCountdown = 3999;   // Countdown in milliseconds
+  let cottonEyeJoeTempo = (60 * 1000) / 132; // Beat per minute, converted to milliseconds per beat
+  let cottonEyeJoeDuration = 20000;
+  let cottonEyeJoeInstructionIds = [
+      // Intro
+      0, -1, 0, -1, 7, -1, 7, -1,
+
+      1, -1, 1, -1, 6, -1, 6, -1,
+
+      // First verse
+      0, 1, 2, 4, 5,
+
+      // Chorus
+      0, 1, 2, 4, 5,
+
+      // First verse
+      0, 1, 2, 4, 5,
+
+
+      // Part 2
+      0, -1, 0, -1, 7, -1, 7, -1,
+
+      1, -1, 1, -1, 6, -1, 6, -1,
+
+
+      // End of song.
+      -1
+    ];
+
+
 let songs = [];
 
 function getSong(songId) {
@@ -30,7 +118,11 @@ function getSong(songId) {
 
 function preloadSongs() {
   soundFormats('mp3');
+
+  hitTheRoadJackFile = loadSound('assets/sounds/hitTheRoadJack');
   ymcaFile = loadSound('assets/sounds/YMCA');
+  straightOuttaComptonFile = loadSound('assets/sounds/straightOuttaCompton');
+  cottonEyeJoeFile = loadSound('assets/sounds/cottonEyeJoe');
 }
 
 class Song {
@@ -123,9 +215,8 @@ class Song {
 }
 
 function setupSongs() {
-  songs.push(new Song(ymcaFile, ymcaCountdown, ymcaTempo, ymcaDuration, ymcaInstructionIds));   // song with Id 0
+  songs.push(new Song(hitTheRoadJackFile, hitTheRoadJackCountdown, hitTheRoadJackTempo, hitTheRoadJackDuration, hitTheRoadJackInstructionIds));   // song with Id 0
   songs.push(new Song(ymcaFile, ymcaCountdown, ymcaTempo, ymcaDuration, ymcaInstructionIds));   // song with Id 1
-  songs.push(new Song(ymcaFile, ymcaCountdown, ymcaTempo, ymcaDuration, ymcaInstructionIds));   // song with Id 2
-  songs.push(new Song(ymcaFile, ymcaCountdown, ymcaTempo, ymcaDuration, ymcaInstructionIds));   // song with Id 3
-  songs.push(new Song(ymcaFile, ymcaCountdown, ymcaTempo, ymcaDuration, ymcaInstructionIds));   // song with Id 4
+  songs.push(new Song(straightOuttaComptonFile, straightOuttaComptonCountdown, straightOuttaComptonTempo, straightOuttaComptonDuration, straightOuttaComptonInstructionIds));   // song with Id 2
+  songs.push(new Song(cottonEyeJoeFile, cottonEyeJoeCountdown, cottonEyeJoeTempo, cottonEyeJoeDuration, cottonEyeJoeInstructionIds));   // song with Id 3
 }
