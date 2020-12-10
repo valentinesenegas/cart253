@@ -11,6 +11,8 @@ let instructionPointRightId = 5;
 let instructionClapRightId = 6;
 let instructionPunchRightId = 7;
 
+let imgReady;
+
 // Number of instructions
 let maxInstructions = 8;
 
@@ -30,6 +32,8 @@ function preloadInstructions() {
   instructionImages.push(loadImage("assets/images/instructions/instruction-point-right.png"));
   instructionImages.push(loadImage("assets/images/instructions/instruction-clap-right.png"));
   instructionImages.push(loadImage("assets/images/instructions/instruction-punch-right.png"));
+
+  imgReady = loadImage("assets/images/instructions/ready.png");
 }
 
 class Instruction {
@@ -48,7 +52,10 @@ class Instruction {
     tint(255, Math.min(255, (this.offsetY / (this.limitY / 2)) * 255));
     imageMode(CORNER);
     image(this.img, this.startX, this.startY + this.offsetY);
-    this.offsetY += this.speedY;
+    if (this.offsetY >= this.limitY - getDanceMoveDuration() * this.speedY)
+      image(imgReady, this.startX, this.startY + this.offsetY);
+    if (isGamePaused() == false)
+      this.offsetY += this.speedY;
     pop();
   }
 

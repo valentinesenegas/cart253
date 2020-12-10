@@ -53,6 +53,8 @@ let rightDanceMove = 2;
 // The dance move for the rest position.
 let atRestDanceMove;
 
+let danceMoveDuration = 30;
+
 // ---------- //
 // Preload the images and sounds
 function preloadMoves() {
@@ -108,17 +110,21 @@ function getRestDanceMove() {
   return atRestDanceMove;
 }
 
+function getDanceMoveDuration() {
+  return danceMoveDuration;
+}
+
 // ---------- //
 
 class DanceMove {
   constructor(instructionId) {
     this.instructionId = instructionId;
     this.character = GetCharacter();
-    this.timeToLive = 30;   // Draw the dance move during 30 frames.
+    this.timeToLive = danceMoveDuration;   // Draw the dance move during 30 frames.
   }
 
   draw() {
-    if (this.timeToLive > 0)
+    if (isGamePaused() == false && this.timeToLive > 0)
       this.timeToLive--;
   }
 
@@ -243,19 +249,6 @@ class PointLeftDanceMove extends BasicDanceMove {
        imgClenchedFistBackLeft1, imgPointLeft1, -230,  -20, -230, -90,
        imgClenchedFistBackLeft2, imgPointLeft2, -230, -10, -230, -30);
    }
-  // draw() {
-  //   if (this.timeToLive >= 15)
-  //     image(imgClenchedFistBackLeft1, this.character.getX() - 300, this.character.getY() - 20);
-  //   else
-  //     image(imgClenchedFistBackLeft2, this.character.getX() - 300, this.character.getY() - 20);
-  //     this.character.drawCharacterLeft();
-  //   if (this.timeToLive >= 15)
-  //     image(imgPointLeft1, this.character.getX() - 230, this.character.getY() - 100);
-  //   else
-  //     image(imgPointLeft2, this.character.getX() - 230, this.character.getY() - 30);
-  //   super.draw();
-  // }
-
 }
 class PointRightDanceMove extends BasicDanceMove {
    constructor(instructionId) {
@@ -263,18 +256,6 @@ class PointRightDanceMove extends BasicDanceMove {
      imgRightArmNormal, imgPointRight1, -50, -45, -150, -70,
      imgRightArmNormal, imgPointRight2, -50, -45, -130, -30);
    }
-  // draw() {
-  //   if (this.timeToLive >= 15)
-  //     image(imgRightArmNormal, this.character.getX() - 50, this.character.getY() - 40);
-  //   else
-  //     image(imgRightArmNormal, this.character.getX() - 50, this.character.getY() - 40);
-  //     this.character.drawCharacterRight();
-  //   if (this.timeToLive >= 15)
-  //     image(imgPointRight1, this.character.getX() - 130, this.character.getY() - 100);
-  //   else
-  //     image(imgPointRight2, this.character.getX() - 130, this.character.getY() - 30);
-  //   super.draw();
-  // }
 }
 
 
@@ -285,21 +266,6 @@ class PunchLeftDanceMove extends BasicDanceMove {
       imgClenchedFistBackLeft1, imgClenchedFistFrontLeft1, -300,  -45, -100, -45,
       imgClenchedFistBackLeft2, imgClenchedFistFrontLeft2,  -215,  -70, -150, -70);
   }
-  // draw() {
-  //   push();
-  //   imageMode(CORNER);
-  //   if (this.timeToLive >= 15)
-  //     image(imgClenchedFistBackLeft1, this.character.getX() - 300, this.character.getY() - 45);
-  //   else
-  //     image(imgClenchedFistBackLeft2, this.character.getX() - 200, this.character.getY() - 45);
-  //   this.character.drawCharacterLeft();
-  //   if (this.timeToLive >= 15)
-  //     image(imgClenchedFistFrontLeft1, this.character.getX() - 75, this.character.getY() - 70);
-  //   else
-  //     image(imgClenchedFistFrontLeft2, this.character.getX() - 150, this.character.getY() - 70);
-  //   pop();
-  //   super.draw();
-  // }
 }
 class PunchRightDanceMove extends BasicDanceMove {
   constructor(instructionId) {
@@ -307,21 +273,6 @@ class PunchRightDanceMove extends BasicDanceMove {
     imgClenchedFistBackRight1, imgClenchedFistFrontRight1,  -10, -20,  -110, -30,
     imgClenchedFistBackRight2, imgClenchedFistFrontRight2, -110, -30, -110, -30);
   }
-  // draw() {
-  //   push();
-  //   imageMode(CORNER);
-  //   if (this.timeToLive >= 15)
-  //     image(imgClenchedFistBackRight1, this.character.getX() - 10, this.character.getY() - 20);
-  //   else
-  //     image(imgClenchedFistBackRight2, this.character.getX() - 10, this.character.getY() - 20);
-  //   this.character.drawCharacterRight();
-  //   if (this.timeToLive >= 15)
-  //     image(imgClenchedFistFrontRight1, this.character.getX() - 110, this.character.getY() - 30);
-  //   else
-  //     image(imgClenchedFistFrontRight2, this.character.getX() - 110, this.character.getY() - 30);
-  //   pop();
-  //   super.draw();
-  // }
 }
 
 
@@ -329,24 +280,9 @@ class PunchRightDanceMove extends BasicDanceMove {
 class ClapLeftDanceMove extends BasicDanceMove {
   constructor(instructionId) {
     super(instructionId, leftDanceMove,
-      imgOpenHandBackLeft1, imgOpenHandFrontLeft1, -200, -50, -200, -50,
-      imgOpenHandBackLeft2, imgOpenHandFrontLeft2, -160, -50, -160, -50);
+      imgOpenHandBackLeft2, imgOpenHandFrontLeft2, -160, -50, -160, -40,
+      imgOpenHandBackLeft1, imgOpenHandFrontLeft1, -200, -50, -170, -50);
   }
-  // draw() {
-  //   push();
-  //   imageMode(CORNER);
-  //   if (this.timeToLive >= 15)
-  //     image(imgOpenHandBackLeft1, this.character.getX() - 200, this.character.getY() - 50);
-  //   else
-  //     image(imgOpenHandBackLeft2, this.character.getX() - 200, this.character.getY() - 50);
-  //   this.character.drawCharacterRight();
-  //   if (this.timeToLive >= 15)
-  //     image(imgOpenHandFrontLeft1, this.character.getX() - 160, this.character.getY() - 50);
-  //   else
-  //     image(imgOpenHandFrontLeft2, this.character.getX() - 160, this.character.getY() - 50);
-  //   pop();
-  //   super.draw();
-  // }
 }
 class ClapRightDanceMove extends BasicDanceMove {
   constructor(instructionId) {
@@ -354,24 +290,6 @@ class ClapRightDanceMove extends BasicDanceMove {
     imgOpenHandBackRight1, imgOpenHandFrontRight1,  +10, -50,  -130, -50,
     imgOpenHandBackRight2, imgOpenHandFrontRight2, +30, -50, -130, -50);
   }
-  // constructor(instructionId) {
-  //   super(instructionId, imgOpenHandBackRight1, imgOpenHandFrontRight1, 10, -50, -130, -30);
-  // }
-  // draw() {
-  //   push();
-  //   imageMode(CORNER);
-  //   if (this.timeToLive >= 15)
-  //     image(imgOpenHandBackRight1, this.character.getX() + 10, this.character.getY() - 50);
-  //   else
-  //     image(imgOpenHandBackRight2, this.character.getX() + 10, this.character.getY() - 50);
-  //   this.character.drawCharacterRight();
-  //   if (this.timeToLive >= 15)
-  //     image(imgOpenHandFrontRight1, this.character.getX() - 130, this.character.getY() - 50);
-  //   else
-  //     image(imgOpenHandFrontRight2, this.character.getX() - 130, this.character.getY() - 50);
-  //   pop();
-  //   super.draw();
-  // }
 }
 
 // Arrow keys and their keyCodes

@@ -17,19 +17,18 @@ let imgHoverArray = [];
 let imgSelectedArray = [];
 
 let regionNames = ["northwest", "northeast" , "southwest" , "southeast"];
-let regionDifficulty = [1, 2, 1, 3];
-let regionNormalColors = [193, 254, 194, 215]; // RGB. G: value
-let regionHoverColors = [143, 237, 170, 162];
+let regionDifficulty = [1, 2, 3, 3];
+let regionNormalColors = [[255, 193, 249], [209, 254, 194], [157, 194, 249], [255, 215, 178]];
+let regionHoverColors = [[244, 143, 234], [169, 237, 145], [114, 170, 255], [255, 162, 75]];
 let currentSelectedRegionId = -1;   // No selected region.
 
 // In each region, rectangle that is always clickable, even when the color is not the color of the region.
 let regionRects =
   [
     [177, 294, 430, 413],
-    // [485, 308, 675, 465],
-    [779, 448, 949, 537],
-    [157, 476, 332, 583],
-    [507, 594, 727, 703]
+    [515, 350, 735, 557],
+    [187, 476, 460, 613],
+    [507, 594, 902, 703]
   ];
 
 // Start button.
@@ -115,6 +114,8 @@ class Region {
   }
 
   draw() {
+    let rgbNormal = regionNormalColors[this.id];
+    let rgbHover = regionHoverColors[this.id];
     let img;
     if (this.id == currentSelectedRegionId)
       img = this.imgSelected;
@@ -122,7 +123,8 @@ class Region {
                mouseX <= regionRects[this.id][2] &&
                mouseY >= regionRects[this.id][1] &&
                mouseY <= regionRects[this.id][3]) ||
-               (rgba[1] == regionNormalColors[this.id] || rgba[1] == regionHoverColors[this.id])) {
+               ((rgba[0] == rgbNormal[0] && rgba[1] == rgbNormal[1] && rgba[2] == rgbNormal[2]) ||
+                (rgba[0] == rgbHover[0] && rgba[1] == rgbHover[1] && rgba[2] == rgbHover[2]))) {
       if (mouseIsPressed) {
         currentSelectedRegionId = this.id;
         img = this.imgSelected;
@@ -139,13 +141,13 @@ class Region {
     pop();
     // Draw clickable rectangles.
     // THIS CODE IS FOR TEST PURPOSE ONLY. DO NOT DELETE.
-      push();
-      fill('rgba(127,127,127, 0.25)');
-      rect( regionRects[this.id][0],
-            regionRects[this.id][1],
-            regionRects[this.id][2] - regionRects[this.id][0],  // W
-            regionRects[this.id][3] - regionRects[this.id][1]); // H
-      pop();
+      // push();
+      // fill('rgba(127,127,127, 0.25)');
+      // rect( regionRects[this.id][0],
+      //       regionRects[this.id][1],
+      //       regionRects[this.id][2] - regionRects[this.id][0],  // W
+      //       regionRects[this.id][3] - regionRects[this.id][1]); // H
+      // pop();
     }
 }
 
@@ -158,6 +160,7 @@ function drawRegions() {
   if (currentSelectedRegionId != -1)
     regions[currentSelectedRegionId].draw();
 }
+
 
 //*********************************************************************
 //
@@ -277,7 +280,7 @@ function drawLastAndRegionScores() {
       push();
       textSize(16);
       textAlign(LEFT, CENTER);
-      text("Incorrect moves: " + getScoreIncorrectMoves(), regionRects[regionId][0], regionRects[regionId][1] + 50);
+      text("Incorrect moves: " + getScoreIncorrectMoves(), regionRects[regionId][0], regionRects[regionId][1] + 100);
       pop();
       drawScorePercentHit(scorePercentHit, regionRects[regionId][0] + 120, regionRects[regionId][1] + 80, scorePercentDiameterSmall, 16);
     }

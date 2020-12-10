@@ -12,7 +12,8 @@ class Feedback {
   }
 
   draw() {
-    this.timeToLive--;
+    if (isGamePaused() == false)
+      this.timeToLive--;
   }
 
   hasReachedEndOfLife() {

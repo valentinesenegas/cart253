@@ -27,5 +27,6 @@ function drawCountdown() {
   else
     text(countdownText, 620, 400);
   pop();
-  countdownTimeToLive--;
+  if (isGamePaused() == false)
+    countdownTimeToLive--;
 }

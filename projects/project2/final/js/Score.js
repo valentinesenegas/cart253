@@ -11,7 +11,7 @@ let scorePercentX = 1150;
 let scorePercentY = 800;
 let scorePercentDiameterSmall = 50;
 let scorePercentDiameterLarge = 100;
-let scoreIncorrectX = 1095;
+let scoreIncorrectX = 1072;
 let scoreIncorrectY = 884;
 
 function scoreHitMove() {
@@ -51,9 +51,8 @@ function drawScoreIncorrectMoves() {
   push();
   textSize(24);
   textAlign(LEFT);
-  // textAlign(RIGHT);
   fill(35, 55, 62);
-  text(`Incorrect: ` + scoreIncorrect, scoreIncorrectX, scoreIncorrectY);
+  text(`Incorrect moves: ` + scoreIncorrect, scoreIncorrectX, scoreIncorrectY);
   pop();
 }
 

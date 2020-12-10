@@ -7,20 +7,34 @@ let hitTheRoadJackTempo = (60 * 1000) / 86; // Beat per minute, converted to mil
 let hitTheRoadJackDuration = 20000;
 let hitTheRoadJackInstructionIds = [
     // First verse
-    0, -1, 7, -1, 0, -1, 7, -1,
+    2, -1, 5, -1, 2, -1, 5, -1,
 
-    1, -1, 6, -1, 1, -1, 2,
+    1, -1, 6, -1, 1, -1,
+
+    // What you say
+    2, -1, // Point left
 
     // Second verse
     0, -1, 7, -1, 0, -1, 7, -1,
 
-    1, -1, 6, -1, 1, -1, 2,
+    1, -1, 6, -1, 1, -1, -1,
 
     // Chorus
-    0, 1, 2, 4, 5,
+    0, -1, 1, -1, 2, -1, 5, -1,
 
     // First verse
-    0, 1, 2, 4, 5,
+    0, -1, 1, -1, 2, -1, 5, -1,
+
+    // Chorus
+    0, -1, 7, -1, 0, -1, 7, -1, // Punch
+    1, -1, 1, -1, 6, -1, 6, -1, // Clap
+
+    // What you say
+    -1, 0, -1,
+
+    // Chorus
+    0, -1, 1, -1, 2, -1, 6, -1, // Escalate
+    0, -1, 7, -1, 0, -1, 7, -1, // Punch
 
     // End of song.
     -1
@@ -44,10 +58,40 @@ let ymcaInstructionIds = [
     2, -1, 5, -1, 5,
 
     // There's no need to be
-    0, 1, 2, 4, 5,
+    0, -1, 1, -1, 6, -1, 1, -1, 6, -1,
 
     // Unhappy
-    
+    2, -1, 5, -1, 2, -1, 5, -1, 5, -1,
+
+    // It's fun to stay at the Y.M.C.A. : Accordion 1
+    1, -1, 1, -1, 3, -1, 3, -1,
+
+    6, -1, 6, -1, -1, -1,
+
+    // Accordion 2
+    3, -1, 3,
+
+    6, -1, 6, -1,
+
+    // They have everything: Clap
+    1, -1, 1, -1, 6, -1, 6, -1,
+
+    1, -1, 1, -1, 6, -1, 6, -1,
+
+    // It's fun to stay at the Y.M.C.A.
+    1, -1, 1, -1, 3, -1, 3, -1,
+
+    6, -1, 6, -1, 6, -1, 6, -1,
+
+    1, -1, 1, -1, 6, -1, 6, -1,
+
+    // You can get yourself clean: Clap
+    1, -1, 1, -1, 6, -1, 6, -1,
+
+    1, -1, 1, -1, 6, -1, 6, -1,
+
+    // Punch and clap
+    0, -1, 1, -1, 7, -1, 6,
 
     // End of song.
     -1
@@ -65,13 +109,47 @@ let ymcaInstructionIds = [
       2, -1, 5, -1, 2, 4, 6,
 
       // First verse
-      0, 1, 2, 4, 5,
+      0, 0, 2, -1, 2, -1,
 
       // Chorus
-      0, 1, 2, 4, 5,
+      0, 1, 2, 5, 6, -1,
 
       // First verse
-      0, 1, 2, 4, 5,
+      6, 5, 2, 1, 0,
+
+      // Point
+      2, -1, 2, -1, 5, -1, 5, -1,
+
+      // Punch
+      0, -1, 0, -1, 7, -1, 7, -1,
+
+      // Punch point
+      0, -1, 2, -1, 7, -1, 5, -1,
+
+      0, -1, 2, -1, 7, -1, 5, -1,
+
+      // Clap
+      1, -1, 1, -1, 6, -1, 6, -1,
+
+      // Clap point
+      1, -1, 2, -1, 5, -1, 6, -1,
+
+      // Punch
+      0, -1, 0, -1, 7, -1, 7, -1,
+
+      // Punch
+      0, -1, 0, -1, 7, -1, 7, -1,
+
+      //
+      // Punch
+      0, -1, 0, -1, 7, -1, 4, -1,
+
+      1, -1, 1, -1, 6, -1, 6, -1,
+
+      // Point
+      2, -1, 2, -1, 5, -1, 5, -1,
+
+      2, -1, 4,
 
       // End of song.
       -1
@@ -87,23 +165,46 @@ let ymcaInstructionIds = [
       // Intro
       0, -1, 0, -1, 7, -1, 7, -1,
 
+      // Where you from where did you go
       1, -1, 1, -1, 6, -1, 6, -1,
-
-      // First verse
-      0, 1, 2, 4, 5,
 
       // Chorus
-      0, 1, 2, 4, 5,
+      2, -1, 5, -1, 2, -1, 5,
 
-      // First verse
-      0, 1, 2, 4, 5,
-
-
-      // Part 2
+      // Chorus
       0, -1, 0, -1, 7, -1, 7, -1,
 
-      1, -1, 1, -1, 6, -1, 6, -1,
+      //
+      1, -1, 6, -1, 1, -1, 6, -1,
 
+      1, -1, 6, -1, 1, -1, 6, -1,
+
+      0, -1, 0, -1, 7, -1, 7, -1,
+
+      0, -1, 0, -1, 7, -1, 7, -1,
+
+      // Accordion
+      1, -1, 3, 3, 3, -1, 2, -1,
+
+      3, 3, 3, -1, 7, -1, 7, -1,
+
+      // Part 2
+      2, -1, 2, -1, 5, -1, 5, -1, // Point
+
+      1, -1, 1, -1, 6, -1, 6, -1, // Clap
+
+      //
+      // Chorus
+      0, -1, 0, -1, 7, -1, 7, -1, // Punch
+
+      0, -1, 0, -1, 7, -1, 4, -1, // Punch and split
+
+      1, -1, 1, -1, 6, -1, 6, -1, // Clap
+
+      1, -1, 1, -1, 6, -1, 6, -1, // Clap
+
+      // Final split
+      4,
 
       // End of song.
       -1
@@ -134,6 +235,7 @@ class Song {
     this.instructionIds = instructionIds;
 
     this.startTime = 0;
+    this.pauseTime = 0;
     this.lastInstructionIdIndex = -1;
     this.total = 0;
     this.progress = 0;
@@ -153,9 +255,20 @@ class Song {
     this.startTime = Date.now();
   }
 
+  pause() {
+    this.file.pause();
+    this.pauseTime = Date.now();
+  }
+
+  resume() {
+    this.startTime += (Date.now() - this.pauseTime);    // Update time with the duration of the pause.
+    this.file.play();
+  }
+
   stop(percentScoreHit, incorrectMoves) {
     this.file.stop();
     this.startTime = 0;
+    this.pauseTime = 0;
     this.lastInstructionIdIndex = -1;
     this.progress = 0;
   }
@@ -187,6 +300,8 @@ class Song {
 
   // Return instruction Id as a posivite value and -1 if there is no new instruction id.
   getNewInstructionId() {
+    if (isGamePaused() == true)
+      return -1;
     let timeElapsed = Date.now() - this.startTime;
     if (timeElapsed < this.countdown)
       return -1;  // Instructions are not available yet.

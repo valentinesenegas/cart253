@@ -27,7 +27,8 @@ class Message {
     strokeWeight(4);
     fill(this.colorText);
     text(this.text, this.startX, this.startY + this.offsetY);
-    this.offsetY += this.speedY;
+    if (isGamePaused() == false)
+      this.offsetY += this.speedY;
     pop();
   }
 

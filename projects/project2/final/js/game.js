@@ -20,6 +20,7 @@ let currentSongId;
 let song = null;
 let waitAfterEndOfGame = 150; // FPS, example 300 = 5 seconds * 60 fps
 let waitTimeoutAfterEndOfGame;
+let pause = false;
 
 // Images for replay and exit buttons.
 let imgReplayButtonReleased;
@@ -30,11 +31,17 @@ let imgExitButtonReleased;
 let imgExitButtonHover;
 let imgExitButtonPressed;
 
+let imgPauseButtonReleased;
+let imgPauseButtonHover;
+let imgPauseButtonPressed;
+
 let imgLastPressedReplayButton = null;
 let imgLastPressedExitButton = null;
+let imgLastPressedPauseButton = null;
 
 let replayButtonX = 100;
 let exitButtonX = 160;
+let pauseButtonX = 40;
 let controlButtonsY = 800;
 let controlButtonsW = 42;
 let controlButtonsH = 42;
@@ -49,6 +56,10 @@ function preloadGame() {
   imgExitButtonReleased = loadImage("assets/images/buttons/exitReleased.png");
   imgExitButtonHover = loadImage("assets/images/buttons/exitHover.png");
   imgExitButtonPressed = loadImage("assets/images/buttons/exitPressed.png");
+
+  imgPauseButtonReleased = loadImage("assets/images/buttons/pauseReleased.png");
+  imgPauseButtonHover = loadImage("assets/images/buttons/pauseHover.png");
+  imgPauseButtonPressed = loadImage("assets/images/buttons/pausePressed.png");
 }
 
 // Setup of the score, creation of the canvas, apply the main font for the text
@@ -77,6 +88,23 @@ function stopGame() {
   song = null;
 }
 
+function pauseGame() {
+  pause = true;
+  if (song != null)
+    song.pause();
+}
+
+function resumeGame() {
+  if (song != null)
+    song.resume();
+  pause = false;
+}
+
+function isGamePaused() {
+  return pause;
+}
+
+
 //*********************************************************************
 //
 //                        B U T T O N S
@@ -92,6 +120,8 @@ function drawControlButtons() {
     if (mouseIsPressed)
       imgReplay = imgReplayButtonPressed;
     else if (imgLastPressedReplayButton == imgReplayButtonPressed) {
+      if (isGamePaused())
+        resumeGame();
       stopGame();
       startGame(currentSongId);
     }
@@ -105,6 +135,7 @@ function drawControlButtons() {
   image(imgReplay, replayButtonX, controlButtonsY);
   pop();
 
+
   // Exit button
     let imgExit = imgExitButtonReleased;
     if (mouseX >= exitButtonX && mouseX <= exitButtonX + controlButtonsW &&
@@ -112,6 +143,8 @@ function drawControlButtons() {
       if (mouseIsPressed)
         imgExit = imgExitButtonPressed;
       else if (imgLastPressedExitButton == imgExitButtonPressed) {
+        if (isGamePaused())
+          resumeGame();
         stopGame();
         resetScore(0);
       }
@@ -124,6 +157,29 @@ function drawControlButtons() {
     imageMode(CORNER);
     image(imgExit, exitButtonX, controlButtonsY);
     pop();
+
+
+  // Pause button
+    let imgPause = imgPauseButtonReleased;
+    if (mouseX >= pauseButtonX && mouseX <= pauseButtonX + controlButtonsW &&
+        mouseY >= controlButtonsY && mouseY <= controlButtonsY + controlButtonsH) {
+      if (mouseIsPressed)
+        imgPause = imgPauseButtonPressed;
+      else if (imgLastPressedPauseButton == imgPauseButtonPressed) {
+        if (isGamePaused())
+          resumeGame();
+        else
+          pauseGame();
+      }
+      else
+        imgPause = imgPauseButtonHover;
+    }
+    imgLastPressedPauseButton = imgPause;
+
+    push();
+    imageMode(CORNER);
+    image(imgPause, pauseButtonX, controlButtonsY);
+    pop();
 }
 
 //*********************************************************************
@@ -131,6 +187,24 @@ function drawControlButtons() {
 //                          D R A W
 //
 //*********************************************************************
+
+
+function drawPause(){
+  if (isGamePaused() == false)
+    return;
+
+    push();
+    fill('rgba(242,242,242, 0.85)');
+    noStroke();
+    rect(180, 320, 920, 200, 6);
+    pop();
+
+    push();
+    textSize(90);
+    textAlign(CENTER);
+    text("Game Paused", 600, 450);
+    pop();
+}
 
 
 function drawCurrentDanceMove(){
@@ -157,6 +231,7 @@ function drawGame() {
   drawScore();
   drawCountdown();
   drawControlButtons();
+  drawPause();
 } // End of draw()
 
 
@@ -213,7 +288,8 @@ function checkForEndOfGame() {
       stopGame();
     }
     else
-      waitTimeoutAfterEndOfGame--;
+      (isGamePaused() == false)
+        waitTimeoutAfterEndOfGame--;
   }
 }
 
