@@ -115,7 +115,7 @@ function preloadHome() {
   imgPresidentRight = loadImage("assets/images/presidentRight.png");
 
   // How to play.
-  imgHowToPlay  = loadImage("assets/images/howToPlay.png");
+  imgHowToPlay  = loadImage("assets/images/howtoplay.png");
 }
 
 function setupHome() {
