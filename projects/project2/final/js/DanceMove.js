@@ -202,20 +202,15 @@ class AtRestDanceMove extends DanceMove {
 
 // Split
 class SplitDanceMove extends DanceMove {
-  constructor(instructionId) {
-    super(instructionId);
-    this.timeToLive = 50;
-  }
-
   draw() {
     push();
     imageMode(CENTER);
-    if (this.timeToLive >= 40)
+    if (this.timeToLive >= 26)
       image(imgSplit1, this.character.getX(), this.character.getY());
-    else if (this.timeToLive >= 30)
+    else if (this.timeToLive >= 22)
       image(imgSplit2, this.character.getX(), this.character.getY() + 10);
-    else if (this.timeToLive >= 10)
-      image(imgSplit3, this.character.getX(), this.character.getY() + 60 + 30 - this.timeToLive);
+    else if (this.timeToLive >= 14)
+      image(imgSplit3, this.character.getX(), this.character.getY() + 60 + 10 - this.timeToLive);
     else
       image(imgSplit3, this.character.getX(), this.character.getY() + 60 + 10);
     pop();

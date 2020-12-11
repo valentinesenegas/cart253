@@ -17,7 +17,7 @@ function preloadScene() {
   openSansRegular = loadFont("assets/fonts/OpenSans-Regular.ttf");
 
   // Background
-  bg = loadImage("assets/images/bg.png");
+  bg = loadImage("assets/images/backgroundgame.png");
 }
 
 
@@ -30,5 +30,4 @@ function setupScene() {
 function drawScene() {
   // Place the background image.
   image(bg, 0, 0);
-
 }

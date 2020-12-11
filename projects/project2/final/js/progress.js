@@ -1,14 +1,15 @@
 "use strict;"
 
-let progressX = 300;
+let progressX = 293;
 let progressY = 860;
-let progressMaxW = 600;
+let progressMaxW = 695;
 let progressH = 20;
 let progressRadius = 20;
 
 function drawProgress(progress, progressMax) {
+  let progressWidth = (progress / progressMax) * progressMaxW
   push();
   fill(50, 60, 70);
-  rect(progressX, progressY, (progress / progressMax) * progressMaxW , progressH, progressRadius, progressRadius, progressRadius, progressRadius) ;
+  rect(progressX, progressY, Math.max(progressWidth, progressRadius), progressH, progressRadius, progressRadius, progressRadius, progressRadius) ;
   pop();
 }

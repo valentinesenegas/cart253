@@ -9,10 +9,10 @@ let scoreMax = 0;
 // Position of text on screen.
 let scorePercentX = 1150;
 let scorePercentY = 800;
-let scorePercentDiameterSmall = 50;
+let scorePercentDiameterSmall = 75;
 let scorePercentDiameterLarge = 100;
 let scoreIncorrectX = 1072;
-let scoreIncorrectY = 884;
+let scoreIncorrectY = 878;
 
 function scoreHitMove() {
   score++;
@@ -42,7 +42,7 @@ function drawScorePercentHit(percent, x, y, scorePercentDiameter, fontSize) {
   textAlign(CENTER);
   textFont(openSansRegular);
   fill(255, 255, 255);
-  text(percent + "%", x - 2, y + 10);
+  text(percent + "%", x, y + 10);
   pop();
 }
 

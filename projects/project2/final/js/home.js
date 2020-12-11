@@ -23,25 +23,40 @@ let regionHoverColors = [[244, 143, 234], [169, 237, 145], [114, 170, 255], [255
 let currentSelectedRegionId = -1;   // No selected region.
 
 // In each region, rectangle that is always clickable, even when the color is not the color of the region.
-let regionRects =
+let starRects =
   [
-    [177, 294, 430, 413],
+    [210, 280, 394, 439],
     [515, 350, 735, 557],
-    [187, 476, 460, 613],
-    [507, 594, 902, 703]
+    [217, 476, 460, 650],
+    [480, 575, 670, 740]
   ];
 
-// Start button.
-let imgStartButtonReleased;
-let imgStartButtonHover;
-let imgStartButtonPressed;
-let imgLastStartButton = null;
+
+// Button.
+let imgButtonReleased;
+let imgButtonHover;
+let imgButtonPressed;
 
 // Position and size of the Start button.
 let startButtonX = 1000;
 let startButtonY = 800;
 let startButtonW = 225;
 let startButtonH = 50;
+let imgLastStartButton = null;
+
+// Position and size of the How to Play button.
+let howToPlayButtonX = 1000;
+let howToPlayButtonY = 730;
+let howToPlayButtonW = 225;
+let howToPlayButtonH = 50;
+let imgLastHowToPlayButton = null;
+let howToPlay = false;
+let imgHowToPlay;
+let closeButtonX = 580;
+let closeButtonY = 830;
+let closeButtonW = 225;
+let closeButtonH = 50;
+let imgLastCloseButton = null;
 
 // Stars indicating level of difficulty.
 let imgStar1;
@@ -51,10 +66,16 @@ let starX = 40;
 let star1Y = 720;
 let star2Y = 770;
 let star3Y = 820;
-let imgDifficulty = [];
+let imgDifficulties = [];
 
 let imgBackgroundHome;
 
+// President character.
+let imgPresidentLeft;
+let imgPresidentRight;
+let presidentTimeToLive = 0;
+let presidentX = 935;
+let presidentY = 130;
 
 //*********************************************************************
 //
@@ -76,18 +97,25 @@ function preloadHome() {
     imgSelectedArray.push(loadImage("assets/images/regions/" + regionNames[regionId] + "Selected.png"));
   }
 
-  // Start button.
-  imgStartButtonReleased  = loadImage("assets/images/buttons/bluebuttonReleased.png");
-  imgStartButtonHover     = loadImage("assets/images/buttons/bluebuttonHover.png");
-  imgStartButtonPressed   = loadImage("assets/images/buttons/bluebuttonPressed.png");
+  // Button.
+  imgButtonReleased  = loadImage("assets/images/buttons/bluebuttonReleased.png");
+  imgButtonHover     = loadImage("assets/images/buttons/bluebuttonHover.png");
+  imgButtonPressed   = loadImage("assets/images/buttons/bluebuttonPressed.png");
 
   // Stars.
   imgStar1 = loadImage("assets/images/1star.png");
   imgStar2 = loadImage("assets/images/2stars.png");
   imgStar3 = loadImage("assets/images/3stars.png");
-  imgDifficulty.push(imgStar1);
-  imgDifficulty.push(imgStar2);
-  imgDifficulty.push(imgStar3);
+  imgDifficulties.push(imgStar1);
+  imgDifficulties.push(imgStar2);
+  imgDifficulties.push(imgStar3);
+
+  // President.
+  imgPresidentLeft  = loadImage("assets/images/presidentLeft.png");
+  imgPresidentRight = loadImage("assets/images/presidentRight.png");
+
+  // How to play.
+  imgHowToPlay  = loadImage("assets/images/howToPlay.png");
 }
 
 function setupHome() {
@@ -119,10 +147,10 @@ class Region {
     let img;
     if (this.id == currentSelectedRegionId)
       img = this.imgSelected;
-    else if (( mouseX >= regionRects[this.id][0] &&
-               mouseX <= regionRects[this.id][2] &&
-               mouseY >= regionRects[this.id][1] &&
-               mouseY <= regionRects[this.id][3]) ||
+    else if (( mouseX >= starRects[this.id][0] &&
+               mouseX <= starRects[this.id][2] &&
+               mouseY >= starRects[this.id][1] &&
+               mouseY <= starRects[this.id][3]) ||
                ((rgba[0] == rgbNormal[0] && rgba[1] == rgbNormal[1] && rgba[2] == rgbNormal[2]) ||
                 (rgba[0] == rgbHover[0] && rgba[1] == rgbHover[1] && rgba[2] == rgbHover[2]))) {
       if (mouseIsPressed) {
@@ -135,18 +163,29 @@ class Region {
     else
       img = this.imgNormal;
     push();
-    imageMode(CORNER);
+    imageMode(LEFT);
     image(img, 0, 0);
-    image(imgDifficulty[regionDifficulty[this.id] - 1], regionRects[this.id][0], regionRects[this.id][1]);
+
+    imageMode(CENTER);
+    let imgDifficulty = imgDifficulties[regionDifficulty[this.id] - 1];
+    image(imgDifficulty,
+        starRects[this.id][0] + (starRects[this.id][2] - starRects[this.id][0]) / 2, // dx
+        starRects[this.id][1] + 23, // dy
+        imgDifficulty.width, // dWidth
+        imgDifficulty.height, // dHeight
+        0, 0          // sx, sy
+
+      );
     pop();
+
     // Draw clickable rectangles.
     // THIS CODE IS FOR TEST PURPOSE ONLY. DO NOT DELETE.
       // push();
       // fill('rgba(127,127,127, 0.25)');
-      // rect( regionRects[this.id][0],
-      //       regionRects[this.id][1],
-      //       regionRects[this.id][2] - regionRects[this.id][0],  // W
-      //       regionRects[this.id][3] - regionRects[this.id][1]); // H
+      // rect( starRects[this.id][0],
+      //       starRects[this.id][1],
+      //       starRects[this.id][2] - starRects[this.id][0],  // W
+      //       starRects[this.id][3] - starRects[this.id][1]); // H
       // pop();
     }
 }
@@ -168,31 +207,72 @@ function drawRegions() {
 //
 //*********************************************************************
 
-function drawStartButton() {
-  let img = imgStartButtonReleased;
+function drawStartAndHowToPlayButtons() {
+  let imgStartButton = imgButtonReleased;
 
   if (mouseX >= startButtonX && mouseX <= startButtonX + startButtonW &&
       mouseY >= startButtonY && mouseY <= startButtonY + startButtonH) {
     if (mouseIsPressed)
-      img = imgStartButtonPressed;
-    else if (imgLastStartButton == imgStartButtonPressed && currentSelectedRegionId != -1) {
+      imgStartButton = imgButtonPressed;
+    else if (imgLastStartButton == imgButtonPressed && currentSelectedRegionId != -1) {
       startGame(currentSelectedRegionId);
     }
     else
-      img = imgStartButtonHover;
+      imgStartButton = imgButtonHover;
   }
-  imgLastStartButton = img;
+  imgLastStartButton = imgStartButton;
+
+  let imgHowToPlayButton = imgButtonReleased;
+
+  if (mouseX >= howToPlayButtonX && mouseX <= howToPlayButtonX + howToPlayButtonW &&
+      mouseY >= howToPlayButtonY && mouseY <= howToPlayButtonY + howToPlayButtonH) {
+    if (mouseIsPressed)
+      imgHowToPlayButton = imgButtonPressed;
+    else if (imgLastHowToPlayButton == imgButtonPressed) {
+      howToPlay = true;
+    }
+    else
+      imgHowToPlayButton = imgButtonHover;
+  }
+  imgLastHowToPlayButton = imgHowToPlayButton;
 
   push();
   imageMode(CORNER);
-  image(img, startButtonX, startButtonY);
+  image(imgStartButton,     startButtonX,     startButtonY);
+  image(imgHowToPlayButton, howToPlayButtonX, howToPlayButtonY);
   textSize(24);
   textAlign(CENTER, CENTER);
+  fill('#ffffff');
+  text("HOW TO PLAY", howToPlayButtonX, howToPlayButtonY, howToPlayButtonW, howToPlayButtonH);
   if (currentSelectedRegionId == -1)
     fill('#777777');
-  else
-    fill('#ffffff');
   text("START", startButtonX, startButtonY, startButtonW, startButtonH);
+  pop();
+}
+
+
+function drawCloseButton() {
+  let imgCloseButton = imgButtonReleased;
+
+  if (mouseX >= closeButtonX && mouseX <= closeButtonX + closeButtonW &&
+      mouseY >= closeButtonY && mouseY <= closeButtonY + closeButtonH) {
+    if (mouseIsPressed)
+      imgCloseButton = imgButtonPressed;
+    else if (imgLastCloseButton == imgButtonPressed) {
+      howToPlay = false;
+    }
+    else
+      imgCloseButton = imgButtonHover;
+  }
+  imgLastCloseButton = imgCloseButton;
+
+  push();
+  imageMode(CORNER);
+  image(imgCloseButton,     closeButtonX,     closeButtonY);
+  textSize(24);
+  textAlign(CENTER, CENTER);
+  fill('#ffffff');
+  text("CLOSE", closeButtonX, closeButtonY, closeButtonW, closeButtonH);
   pop();
 }
 
@@ -205,16 +285,16 @@ function drawStartButton() {
 
 // Starts indicating the level of difficulty of each region.
 function drawStars() {
-  let img = imgStartButtonReleased;
+  let img = imgButtonReleased;
   if (mouseX >= startButtonX && mouseX <= startButtonX + startButtonW &&
       mouseY >= startButtonY && mouseY <= startButtonY + startButtonH) {
     if (mouseIsPressed)
-      img = imgStartButtonPressed;
-    else if (imgLastStartButton == imgStartButtonPressed && currentSelectedRegionId != -1) {
+      img = imgButtonPressed;
+    else if (imgLastStartButton == imgButtonPressed && currentSelectedRegionId != -1) {
       startGame(currentSelectedRegionId);
     }
     else
-      img = imgStartButtonHover;
+      img = imgButtonHover;
   }
   imgLastStartButton = img;
 
@@ -223,12 +303,35 @@ function drawStars() {
   image(imgStar1, starX, star1Y);
   image(imgStar2, starX, star2Y);
   image(imgStar3, starX, star3Y);
-  textSize(24);
-  textFont(openSansRegular);
+  fill(42, 50, 80);
+  textSize(28);
+  textFont(allanBold);
   textAlign(LEFT, CENTER);
-  text("Easy",      starX + 180, star1Y + 22);
-  text("Medium",    starX + 180, star2Y + 22);
-  text("Difficult", starX + 180, star3Y + 22);
+  text("EASY",      starX + 180, star1Y + 22);
+  text("MEDIUM",    starX + 180, star2Y + 22);
+  text("DIFFICULT", starX + 180, star3Y + 22);
+  pop();
+}
+
+
+//*********************************************************************
+//
+//                      P R E S I D E N T
+//
+//*********************************************************************
+
+// Draw a small animation of the president.
+function drawPresident() {
+  push();
+  imageMode(CORNER);
+  if (presidentTimeToLive == 0)
+    presidentTimeToLive = 100;
+  else
+    presidentTimeToLive--;
+  if (presidentTimeToLive >= 50)
+    image(imgPresidentLeft, presidentX, presidentY);
+  else
+    image(imgPresidentRight, presidentX, presidentY);
   pop();
 }
 
@@ -241,7 +344,10 @@ function drawStars() {
 
 function drawBackground() {
   background(241,242,252);
-  image(imgBackgroundHome, 0, 0);
+  if (howToPlay)
+    image(imgHowToPlay, 0, 0);
+  else
+    image(imgBackgroundHome, 0, 0);
 }
 
 
@@ -258,15 +364,18 @@ function drawLastAndRegionScores() {
     push();
     textSize(40);
     textAlign(LEFT, CENTER);
+    fill(241, 243, 252);
     text("Select a region and press START", 400, 100);
     pop();
   }
   else {
     push();
+    fill(241, 243, 252);
     textSize(40);
     textAlign(CENTER);
     text("Last Score", 600, 65);
-    text("Incorrect moves: " + getScoreIncorrectMoves(), 600, 250);
+    textSize(30);
+    text("Incorrect moves: " + getScoreIncorrectMoves(), 600, 230);
     pop();
     drawScorePercentHit(getScorePercentHit(), 600, 140, scorePercentDiameterLarge, 32);
   }
@@ -279,10 +388,20 @@ function drawLastAndRegionScores() {
     if (scorePercentHit != -1) {
       push();
       textSize(16);
-      textAlign(LEFT, CENTER);
-      text("Incorrect moves: " + getScoreIncorrectMoves(), regionRects[regionId][0], regionRects[regionId][1] + 100);
+      textAlign(CENTER);
+      textFont(openSansRegular);
+      text("Incorrect moves: " + getScoreIncorrectMoves(),
+        starRects[regionId][0],
+        starRects[regionId][1] + 125,
+        starRects[regionId][2] - starRects[regionId][0],
+        starRects[regionId][3] - starRects[regionId][1]
+        );
       pop();
-      drawScorePercentHit(scorePercentHit, regionRects[regionId][0] + 120, regionRects[regionId][1] + 80, scorePercentDiameterSmall, 16);
+      drawScorePercentHit(scorePercentHit,
+        starRects[regionId][0] + (starRects[regionId][2] - starRects[regionId][0]) / 2,
+        starRects[regionId][1] + 85,
+        scorePercentDiameterSmall,
+        28);
     }
   }
 }
@@ -295,18 +414,21 @@ function drawLastAndRegionScores() {
 
 
 function drawHome() {
-  // BEGIN - For testing purposes only.
-  rgba = get(mouseX, mouseY);
-  // END - For testing purposes only.
-
+  rgba = get(mouseX, mouseY); // Keep the color of the pixel beneath the mouse. This is used to detect the region hovered by the mouse.
   drawBackground();
-  drawRegions();
-  drawStars();
-  drawStartButton();
-  drawLastAndRegionScores();
+  if (howToPlay)
+    drawCloseButton();
+  else {
+    drawRegions();
+    drawStars();
+    drawStartAndHowToPlayButtons();
+    drawPresident();
+    drawLastAndRegionScores();
+  }
 
-  // BEGIN - For testing purposes only.
+  // BEGIN - For testing purposes only -- DO NOT DELETE.
   // push();
+  // textSize(20);
   // textFont(openSansRegular);
   // text("R:" + rgba[0] + " G:" + rgba[1] + " B:" + rgba[2] + " A:" + rgba[3], 100, 100);
   // text("X:" + mouseX + " Y:" + mouseY, 100, 150);
